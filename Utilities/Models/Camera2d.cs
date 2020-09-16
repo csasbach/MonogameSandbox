@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Utilities.Abstractions;
 
-namespace Utilities.Services
+namespace Utilities.Models
 {
-    public class Camera2d : ICameraService
+    public class Camera2d
     {
         private Viewport _viewport;
 

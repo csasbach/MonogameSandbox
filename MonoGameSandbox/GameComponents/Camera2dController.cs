@@ -3,11 +3,11 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using Utilities.Abstractions;
 using Utilities.Extensions;
-using Utilities.Services;
+using Utilities.Models;
 
 namespace MonoGameSandbox.GameComponents
 {
-    public class Camera2dController : GameComponent, ICameraService
+    public class Camera2dController : ComponentService, ICameraService
     {
         private readonly GraphicsDeviceManager _graphicsDeviceManager;
         private readonly ICameraOptions _cameraOptions;
@@ -19,21 +19,17 @@ namespace MonoGameSandbox.GameComponents
         public float Zoom => _camera.Zoom;
         public Matrix Transform => _camera.Transform;
 
-        public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, IInputService inputService) : base(game)
+        public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, IInputService inputService) : base(game, typeof(ICameraService))
         {
             _graphicsDeviceManager = graphicsDeviceManager;
             _input = inputService;
-            Game.Components.Add(this);
-            Game.Services.AddService<ICameraService>(this);
         }
 
-        public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, ICameraOptions cameraOptions, IInputService inputService) : base(game)
+        public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, ICameraOptions cameraOptions, IInputService inputService) : base(game, typeof(ICameraService))
         {
             _graphicsDeviceManager = graphicsDeviceManager;
             _cameraOptions = cameraOptions;
             _input = inputService;
-            Game.Components.Add(this);
-            Game.Services.AddService<ICameraService>(this);
         }
 
         public override void Initialize()

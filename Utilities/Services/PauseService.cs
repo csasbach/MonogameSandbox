@@ -4,17 +4,15 @@ using Utilities.Abstractions;
 
 namespace Utilities.Services
 {
-    public class PauseService : GameComponent, IPauseService
+    public class PauseService : ComponentService, IPauseService
     {
         private readonly IInputService _input;
 
         public bool Paused { get; set; }
 
-        public PauseService(Game game, IInputService input) : base(game)
+        public PauseService(Game game, IInputService input) : base(game, typeof(IPauseService))
         {
             _input = input;
-            Game.Components.Add(this);
-            Game.Services.AddService<IPauseService>(this);
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ using Utilities.DrawableGameComponents;
 
 namespace Utilities.Services
 {
-    public class GameStateService : IGameStateService
+    public class GameStateService : ServiceBase, IGameStateService
     {
         private Scene _gameState;
         public Type GameState
@@ -17,10 +17,14 @@ namespace Utilities.Services
             }
         }
 
-        public void SetGameState<T>(Game game, SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause) where T : Scene
+        public GameStateService(Game game) : base(game, typeof(IGameStateService))
+        {
+        }
+
+        public void SetGameState<T>(SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause) where T : Scene
         {
             _gameState?.ForceUnloadContent();
-            _gameState = (T)Activator.CreateInstance(typeof(T), game, spriteBatch, transformer, pause, this);
+            _gameState = (T)Activator.CreateInstance(typeof(T), Game, spriteBatch, transformer, pause, this);
         }
     }
 }

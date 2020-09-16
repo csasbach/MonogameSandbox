@@ -32,7 +32,7 @@ namespace MonoGameSandbox
             _input = new InputService(this);
             _pause = new PauseService(this, _input);
             _camera = new Camera2dController(this, _graphics, _input);
-            _gameState = new GameStateService();
+            _gameState = new GameStateService(this);
         }
 
         protected override void Initialize()
@@ -46,7 +46,7 @@ namespace MonoGameSandbox
             // game components must be instantiated here after graphics but before base.Initialize()
             // the first scene is loaded here, then all subsequent scene loading and unloading is handled by
             // the scenes themselves
-            _gameState.SetGameState<DemoScene>(this, _spriteBatch, _camera, _pause);
+            _gameState.SetGameState<DemoScene>(_spriteBatch, _camera, _pause);
 
             // game components will have their Initialize() methods called here if you instantiated them above
             base.Initialize();

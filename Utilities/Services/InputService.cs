@@ -8,17 +8,13 @@ using Utilities.Abstractions;
 
 namespace Utilities.Services
 {
-    public class InputService : GameComponent, IInputService
+    public class InputService : ComponentService, IInputService
     {
         private FrameState _currentFrame;
         private FrameState _previousFrame;
         public float ScrollWheelSensitivity { get; set; } = 0.01f;
 
-        public InputService(Game game) : base(game)
-        {
-            Game.Components.Add(this);
-            Game.Services.AddService(this);
-        }
+        public InputService(Game game) : base(game, typeof(IInputService)) { }
 
         public override void Update(GameTime gameTime)
         {
