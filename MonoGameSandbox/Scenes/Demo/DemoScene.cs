@@ -20,7 +20,7 @@ namespace MonoGameSandbox.Scenes.Demo
             // a scene (or any object) can be responsible for instantiating
             // another root node, without having it be a child of the object insantiating it
             // if it makes sense for that node to be rendered independently
-            new Hud(Game, SpriteBatch, null, Pause);
+            IndependentSprites.Add(new Hud(Game, SpriteBatch, null, Pause));
 
             var texture = new Texture2D(GraphicsDevice, 1, 1);
             texture.SetData(new[] { Color.White });

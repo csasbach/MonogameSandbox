@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameSandbox.GameComponents;
-using MonoGameSandbox.Scenes.Demo;
+using MonoGameSandbox.Scenes.MainMenu;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -46,7 +46,7 @@ namespace MonoGameSandbox
             // game components must be instantiated here after graphics but before base.Initialize()
             // the first scene is loaded here, then all subsequent scene loading and unloading is handled by
             // the scenes themselves
-            _gameState.SetGameState<DemoScene>(_spriteBatch, _camera, _pause);
+            _gameState.SetGameState<MainMenuScene>(_spriteBatch, _camera, _pause);
 
             // game components will have their Initialize() methods called here if you instantiated them above
             base.Initialize();

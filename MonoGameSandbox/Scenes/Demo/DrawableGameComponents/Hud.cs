@@ -36,7 +36,7 @@ namespace MonoGameSandbox.Scenes.Demo.DrawableGameComponents
                 SpriteFont = _logFont,
                 Text = () =>
                 {
-                    return _pause.Paused ? "PAUSED" : $"CamPos:X={camera?.Position.X.ToString(signedIntegerFormat)},Y={camera?.Position.Y.ToString(signedIntegerFormat)} " +
+                    return _pause?.Paused ?? false ? "PAUSED" : $"CamPos:X={camera?.Position.X.ToString(signedIntegerFormat)},Y={camera?.Position.Y.ToString(signedIntegerFormat)} " +
                                         $"CamZoom:{camera?.Zoom.ToString(percentFormat)} " +
                                         $"CamRotDeg:{MathHelper.ToDegrees(camera?.Rotation ?? 0).ToString(degreesFormat)}";
                 },

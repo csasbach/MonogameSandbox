@@ -9,6 +9,7 @@ namespace Utilities.DrawableGameComponents
     /// </summary>
     public interface ISprite
     {
+        bool IsInitialized { get; }
         Vector2 Position { get; set; }
         Color Color { get; set; }
         float Rotation { get; set; }
@@ -27,7 +28,10 @@ namespace Utilities.DrawableGameComponents
         /// (empty if this sprite is a leaf node)
         /// </summary>
         List<ISprite> Children { get; }
-
+        /// <summary>
+        /// The standard GameComponent override
+        /// </summary>
+        void Initialize();
         /// <summary>
         /// The standard DrawableGameComponent override
         /// </summary>
@@ -45,5 +49,6 @@ namespace Utilities.DrawableGameComponents
         void DetachFromTree(SpriteBatch spriteBatch);
         void SetSpriteBatch(SpriteBatch spriteBatch);
         void SetParent(ISprite parent);
+        void ForceUnloadContent();
     }
 }

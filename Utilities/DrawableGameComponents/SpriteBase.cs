@@ -11,6 +11,7 @@ namespace Utilities.DrawableGameComponents
     /// </summary>
     public abstract class SpriteBase : DrawableGameComponent, ISprite
     {
+        public bool IsInitialized { get; protected set; }
         public ISprite Parent { get; private set; }
         public List<ISprite> Children { get; } = new List<ISprite>();
 
@@ -42,8 +43,25 @@ namespace Utilities.DrawableGameComponents
         {
             _spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
             Transformer = transformer;
+        }
+
+        public override void Initialize()
+        {
+            IsInitialized = true;
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
             // root nodes must be added to the game components list to be included in the game loop
+            //
+            // IMPORTANT!
+            // It appears Monogame calls LoadContent on components whenever they are added to a GameComponentCollection
+            // therefore, I have opted to add the components here rather than in the consturctor, otherwise constructor
+            // chains and hierarchy resolution orderin related components can become a difficult to manage problem
             Game.Components.Add(this);
+
+            base.LoadContent();
         }
 
         /// <summary>
@@ -115,12 +133,33 @@ namespace Utilities.DrawableGameComponents
         {
             if (parent is null) throw new ArgumentNullException(nameof(parent));
 
-            if (!(_spriteBatch is null)) Game.Components.Remove(this);
+            // if this node stops being a root node it no longer needs to be included in the game loop
+            if (!(_spriteBatch is null))
+            {
+                Game.Components.Remove(this);
+                _spriteBatch = null;
+            }
 
-            _spriteBatch = null;
-            // when this node stops being a root node it no longer needs to be included in the game loop
+            // if this node already had a parent, remove it from that parent's children
             Parent?.Children.Remove(this);
+
             Parent = parent;
+        }
+
+        public void ForceUnloadContent()
+        {
+            UnloadContent();
+        }
+
+        protected override void UnloadContent()
+        {
+            if (!(_spriteBatch is null))
+            {
+                Game.Components.Remove(this);
+            }
+            Parent?.Children.Remove(this);
+
+            base.UnloadContent();
         }
     }
 }

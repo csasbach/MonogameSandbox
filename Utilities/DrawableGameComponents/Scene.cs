@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using Utilities.Abstractions;
 
 namespace Utilities.DrawableGameComponents
@@ -14,11 +15,22 @@ namespace Utilities.DrawableGameComponents
         protected IGameStateService GameState { get; }
         protected Color BackgroundColor { get; set; } = Color.Black;
         protected IPauseService Pause { get; }
+        protected List<ISprite> IndependentSprites { get; } = new List<ISprite>();
 
         public Scene(Game game, SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause, IGameStateService gameState) : base(game, spriteBatch, transformer)
         {
             Pause = pause;
             GameState = gameState;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            foreach (var sprite in IndependentSprites)
+            {
+                if (!sprite.IsInitialized) sprite.Initialize();
+            }
+
+            base.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -33,8 +45,12 @@ namespace Utilities.DrawableGameComponents
             base.Draw(spriteBatch);
         }
 
-        public void ForceUnloadContent()
+        protected override void UnloadContent()
         {
+            foreach (var sprite in IndependentSprites)
+            {
+                sprite.ForceUnloadContent();
+            }
             base.UnloadContent();
         }
     }

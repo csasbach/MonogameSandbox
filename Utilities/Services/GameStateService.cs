@@ -6,25 +6,30 @@ using Utilities.DrawableGameComponents;
 
 namespace Utilities.Services
 {
-    public class GameStateService : ServiceBase, IGameStateService
+    public class GameStateService : ComponentService, IGameStateService
     {
+        private Func<Scene> _gameStateSetter;
         private Scene _gameState;
-        public Type GameState
-        {
-            get
-            {
-                return _gameState.GetType();
-            }
-        }
+        public Type GameState => _gameState.GetType();
 
-        public GameStateService(Game game) : base(game, typeof(IGameStateService))
-        {
-        }
+        public GameStateService(Game game) : base(game, typeof(IGameStateService)) { }
 
         public void SetGameState<T>(SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause) where T : Scene
         {
+            // define the function that will set the new game state when Update is next called
+            _gameStateSetter = () => (T)Activator.CreateInstance(typeof(T), Game, spriteBatch, transformer, pause, this);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (_gameStateSetter is null) return;
+
             _gameState?.ForceUnloadContent();
-            _gameState = (T)Activator.CreateInstance(typeof(T), Game, spriteBatch, transformer, pause, this);
+            _gameState = _gameStateSetter();
+            _gameStateSetter = null;
+            _gameState.Initialize();
+
+            base.Update(gameTime);
         }
     }
 }
