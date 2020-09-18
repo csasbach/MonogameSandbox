@@ -37,6 +37,7 @@ namespace MonoGameSandbox
 
         protected override void Initialize()
         {
+            Window.Title = "Sandbox";
             // graphics must be initialized starting here because GraphicsDevice is not yet available in constructor
             _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;

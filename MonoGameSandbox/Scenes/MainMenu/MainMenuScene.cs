@@ -16,6 +16,7 @@ namespace MonoGameSandbox.Scenes.MainMenu
         public MainMenuScene(Game game, SpriteBatch spriteBatch)
             : base(game, spriteBatch)
         {
+            SceneName = "Menu";
             BackgroundColor = Color.Black;
             _input = Game.Services.GetService<IInputService>();
         }

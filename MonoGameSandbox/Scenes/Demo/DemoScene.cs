@@ -17,6 +17,7 @@ namespace MonoGameSandbox.Scenes.Demo
         public DemoScene(Game game, SpriteBatch spriteBatch)
             : base(game, spriteBatch)
         {
+            SceneName = "Demo";
             BackgroundColor = Color.CadetBlue;
             _camera = Game.Services.GetService<ICameraService>();
             _input = Game.Services.GetService<IInputService>();

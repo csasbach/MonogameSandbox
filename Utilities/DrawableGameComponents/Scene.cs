@@ -12,6 +12,13 @@ namespace Utilities.DrawableGameComponents
     /// </summary>
     public class Scene : Canvas2d
     {
+        private string _gameTitle;
+        private string _sceneName;
+        protected string SceneName
+        {
+            get => string.IsNullOrWhiteSpace(_sceneName) ? _gameTitle : $"{_gameTitle} ({_sceneName})";
+            set => _sceneName = value;
+        }
         protected IGameStateService GameState { get; }
         protected Color BackgroundColor { get; set; } = Color.Black;
         protected IPauseService Pause { get; }
@@ -21,6 +28,13 @@ namespace Utilities.DrawableGameComponents
         {
             Pause = Game.Services.GetService<IPauseService>();
             GameState = Game.Services.GetService<IGameStateService>();
+        }
+
+        public override void Initialize()
+        {
+            _gameTitle = _gameTitle ?? Game.Window.Title;
+            Game.Window.Title = SceneName;
+            base.Initialize();
         }
 
         public override void Update(GameTime gameTime)
@@ -47,6 +61,7 @@ namespace Utilities.DrawableGameComponents
 
         protected override void UnloadContent()
         {
+            Game.Window.Title = _gameTitle;
             foreach (var sprite in IndependentSprites)
             {
                 sprite.ForceUnloadContent();
