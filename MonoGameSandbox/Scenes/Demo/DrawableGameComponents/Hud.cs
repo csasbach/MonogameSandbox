@@ -8,6 +8,7 @@ namespace MonoGameSandbox.Scenes.Demo.DrawableGameComponents
     public sealed class Hud : Canvas2d
     {
         private readonly IPauseService _pause;
+
         public Hud(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
             _pause = Game.Services.GetService<IPauseService>();

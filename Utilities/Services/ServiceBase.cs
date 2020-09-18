@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Utilities.Abstractions
+namespace Utilities.Services
 {
     public abstract class ServiceBase
     {

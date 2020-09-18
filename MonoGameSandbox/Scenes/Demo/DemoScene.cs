@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGameSandbox.Scenes.Demo.DrawableGameComponents;
+using MonoGameSandbox.Scenes.MainMenu;
 using System;
 using Utilities.Abstractions;
 using Utilities.DrawableGameComponents;
@@ -10,17 +12,21 @@ namespace MonoGameSandbox.Scenes.Demo
     public class DemoScene : Scene
     {
         private readonly ICameraService _camera;
+        private readonly IInputService _input;
+
         public DemoScene(Game game, SpriteBatch spriteBatch)
             : base(game, spriteBatch)
         {
             BackgroundColor = Color.CadetBlue;
             _camera = Game.Services.GetService<ICameraService>();
-            _camera.Enabled = true;
+            _input = Game.Services.GetService<IInputService>();
             Transformer = _camera;
         }
 
         protected override void LoadContent()
         {
+            _camera.Enabled = true;
+
             // a scene (or any object) can be responsible for instantiating
             // another root node, without having it be a child of the object insantiating it
             // if it makes sense for that node to be rendered independently
@@ -67,6 +73,13 @@ namespace MonoGameSandbox.Scenes.Demo
             }
 
             base.LoadContent();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            _input.OnReleased(() => GameState.SetGameState<MainMenuScene>(SpriteBatch), g => g.A, Keys.E);
+
+            base.Update(gameTime);
         }
 
         protected override void UnloadContent()

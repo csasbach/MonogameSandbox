@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Utilities.Abstractions
+namespace Utilities.Services
 {
-    public abstract class ComponentService : GameComponent
+    public abstract class DrawableComponentService : DrawableGameComponent
     {
-        protected ComponentService(Game game, Type serviceType) : base(game)
+        protected DrawableComponentService(Game game, Type serviceType) : base(game)
         {
             if (!serviceType.IsInstanceOfType(this)) throw new InvalidOperationException($"This service must be an instance of {serviceType.Name}.");
             Game.Services.AddService(serviceType, this);

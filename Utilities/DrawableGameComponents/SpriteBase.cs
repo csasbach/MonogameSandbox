@@ -177,6 +177,7 @@ namespace Utilities.DrawableGameComponents
             Parent?.Children.Remove(this);
 
             base.UnloadContent();
+            Dispose();
         }
     }
 }

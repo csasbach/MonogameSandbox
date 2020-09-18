@@ -4,6 +4,7 @@ using System;
 using Utilities.Abstractions;
 using Utilities.Extensions;
 using Utilities.Models;
+using Utilities.Services;
 
 namespace MonoGameSandbox.GameComponents
 {
@@ -132,6 +133,12 @@ namespace MonoGameSandbox.GameComponents
             var deltaInIntegralDegrees = Math.Round(rawDeltaInDegrees);
             var deltaAsRadians = MathHelper.ToRadians((float)deltaInIntegralDegrees);
             return deltaAsRadians;
+        }
+
+        protected override void OnEnabledChanged(object sender, EventArgs args)
+        {
+            _camera?.Reset();
+            base.OnEnabledChanged(sender, args);
         }
     }
 }

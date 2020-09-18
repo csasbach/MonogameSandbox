@@ -68,7 +68,7 @@ namespace MonoGameSandbox
             try
             {
                 // checking exit immediately helps to prevent getting stuck in the game loop
-                _input.OnReleased(Exit, b => b.Back, Keys.Escape);
+                _input.OnReleased(Exit, g => g.Back, Keys.Escape);
 
                 // only doing the pause update saves resources while paused
                 if (_pause.Paused)
