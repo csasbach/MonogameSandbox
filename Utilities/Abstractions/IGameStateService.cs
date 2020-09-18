@@ -7,6 +7,6 @@ namespace Utilities.Abstractions
     public interface IGameStateService
     {
         Type GameState { get; }
-        void SetGameState<T>(SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause) where T : Scene;
+        void SetGameState<T>(SpriteBatch spriteBatch) where T : Scene;
     }
 }

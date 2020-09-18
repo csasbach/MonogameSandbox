@@ -23,6 +23,7 @@ namespace MonoGameSandbox.GameComponents
         {
             _graphicsDeviceManager = graphicsDeviceManager;
             _input = inputService;
+            Enabled = false;
         }
 
         public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, ICameraOptions cameraOptions, IInputService inputService) : base(game, typeof(ICameraService))
@@ -30,6 +31,7 @@ namespace MonoGameSandbox.GameComponents
             _graphicsDeviceManager = graphicsDeviceManager;
             _cameraOptions = cameraOptions;
             _input = inputService;
+            Enabled = false;
         }
 
         public override void Initialize()

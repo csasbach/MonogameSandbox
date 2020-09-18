@@ -19,7 +19,6 @@ namespace MonoGameSandbox
         private readonly ConcurrentBag<Exception> CaughtExceptions = new ConcurrentBag<Exception>();
         private readonly IInputService _input;
         private readonly IPauseService _pause;
-        private readonly ICameraService _camera;
         private readonly IGameStateService _gameState;
 
         public Game1()
@@ -31,8 +30,9 @@ namespace MonoGameSandbox
             // services and controllers for non-graphical game components can be instantiated here
             _input = new InputService(this);
             _pause = new PauseService(this, _input);
-            _camera = new Camera2dController(this, _graphics, _input);
             _gameState = new GameStateService(this);
+
+            new Camera2dController(this, _graphics, _input);
         }
 
         protected override void Initialize()
@@ -46,7 +46,7 @@ namespace MonoGameSandbox
             // game components must be instantiated here after graphics but before base.Initialize()
             // the first scene is loaded here, then all subsequent scene loading and unloading is handled by
             // the scenes themselves
-            _gameState.SetGameState<MainMenuScene>(_spriteBatch, _camera, _pause);
+            _gameState.SetGameState<MainMenuScene>(_spriteBatch);
 
             // game components will have their Initialize() methods called here if you instantiated them above
             base.Initialize();

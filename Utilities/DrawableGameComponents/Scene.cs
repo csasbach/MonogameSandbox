@@ -17,10 +17,10 @@ namespace Utilities.DrawableGameComponents
         protected IPauseService Pause { get; }
         protected List<ISprite> IndependentSprites { get; } = new List<ISprite>();
 
-        public Scene(Game game, SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause, IGameStateService gameState) : base(game, spriteBatch, transformer)
+        public Scene(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
-            Pause = pause;
-            GameState = gameState;
+            Pause = Game.Services.GetService<IPauseService>();
+            GameState = Game.Services.GetService<IGameStateService>();
         }
 
         public override void Update(GameTime gameTime)

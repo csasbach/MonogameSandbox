@@ -14,10 +14,10 @@ namespace Utilities.Services
 
         public GameStateService(Game game) : base(game, typeof(IGameStateService)) { }
 
-        public void SetGameState<T>(SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause) where T : Scene
+        public void SetGameState<T>(SpriteBatch spriteBatch) where T : Scene
         {
             // define the function that will set the new game state when Update is next called
-            _gameStateSetter = () => (T)Activator.CreateInstance(typeof(T), Game, spriteBatch, transformer, pause, this);
+            _gameStateSetter = () => (T)Activator.CreateInstance(typeof(T), Game, spriteBatch);
         }
 
         public override void Update(GameTime gameTime)

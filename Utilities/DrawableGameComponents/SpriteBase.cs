@@ -11,7 +11,6 @@ namespace Utilities.DrawableGameComponents
     /// </summary>
     public abstract class SpriteBase : DrawableGameComponent, ISprite
     {
-        public bool IsInitialized { get; protected set; }
         public ISprite Parent { get; private set; }
         public List<ISprite> Children { get; } = new List<ISprite>();
 
@@ -20,16 +19,23 @@ namespace Utilities.DrawableGameComponents
         /// </summary>
         private SpriteBatch _spriteBatch;
         public SpriteBatch SpriteBatch => _spriteBatch ?? Parent.SpriteBatch;
-
-        public Vector2 Position { get; set; } = Vector2.Zero;
-        public Vector2 Origin { get; set; } = Vector2.Zero;
-        public Vector2 Scale { get; set; } = Vector2.One;
-        public float Rotation { get; set; } = 0.0f;
-        public float LayerDepth { get; set; } = 0.0f;
+        private Vector2 _position = Vector2.Zero;
+        public Vector2 Position { get => _position + (Parent?.Position ?? Vector2.Zero); set => _position = value; }
+        private Vector2 _origin = Vector2.Zero;
+        public Vector2 Origin { get => _origin + (Parent?.Origin ?? Vector2.Zero); set => _origin = value; }
+        private Vector2 _scale = Vector2.One;
+        public Vector2 Scale { get => _scale * (Parent?.Scale ?? Vector2.One); set => _scale = value; }
+        private float _rotation = 0.0f;
+        public float Rotation { get => _rotation + (Parent?.Rotation ?? 0.0f); set => _rotation = value; }
+        private float _layerDepth = 0.0f;
+        public float LayerDepth { get => _layerDepth + (Parent?.LayerDepth ?? 0.0f); set => _layerDepth = value; }
+        private SpriteEffects _effects = SpriteEffects.None;
+        public SpriteEffects Effects { get => _effects | (Parent?.Effects ?? _effects); set => _effects = value; }
         public Color Color { get; set; } = Color.White;
-        public SpriteEffects Effects { get; set; } = SpriteEffects.None;
+        public ITransformer Transformer { get; protected set; }
 
-        public ITransformer Transformer { get; }
+        public bool IsInitialized { get; protected set; }
+        protected IInputService Input { get; private set; }
 
         /// <summary>
         /// Root node constructor
@@ -39,29 +45,10 @@ namespace Utilities.DrawableGameComponents
         /// <param name="game"></param>
         /// <param name="spriteBatch"></param>
         /// <param name="transformer"></param>
-        protected SpriteBase(Game game, SpriteBatch spriteBatch, ITransformer transformer) : base(game)
+        protected SpriteBase(Game game, SpriteBatch spriteBatch) : base(game)
         {
             _spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
-            Transformer = transformer;
-        }
-
-        public override void Initialize()
-        {
-            IsInitialized = true;
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            // root nodes must be added to the game components list to be included in the game loop
-            //
-            // IMPORTANT!
-            // It appears Monogame calls LoadContent on components whenever they are added to a GameComponentCollection
-            // therefore, I have opted to add the components here rather than in the consturctor, otherwise constructor
-            // chains and hierarchy resolution orderin related components can become a difficult to manage problem
-            Game.Components.Add(this);
-
-            base.LoadContent();
+            Input = Game.Services.GetService<IInputService>();
         }
 
         /// <summary>
@@ -75,6 +62,36 @@ namespace Utilities.DrawableGameComponents
         {
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Parent.Children.Add(this);
+            Input = Game.Services.GetService<IInputService>();
+        }
+
+        public override void Initialize()
+        {
+            IsInitialized = true;
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            // root nodes must be added to the game components list to be included in the game loop
+            //
+            // IMPORTANT!
+            // An event is fired that calls LoadContent on components whenever they are added to a GameComponentCollection
+            // therefore, I have opted to add the components here rather than in the consturctor, otherwise constructor
+            // chains and hierarchy resolution order in related components can become a difficult to manage problem
+            Game.Components.Add(this);
+
+            base.LoadContent();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            foreach (var child in Children)
+            {
+                child.Update(gameTime);
+            }
+
+            base.Update(gameTime);
         }
 
         /// <summary>

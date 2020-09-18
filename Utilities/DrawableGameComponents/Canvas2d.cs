@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Utilities.Abstractions;
 
 namespace Utilities.DrawableGameComponents
 {
@@ -17,7 +16,7 @@ namespace Utilities.DrawableGameComponents
         /// <param name="game"></param>
         /// <param name="spriteBatch"></param>
         /// <param name="transformer"></param>
-        public Canvas2d(Game game, SpriteBatch spriteBatch, ITransformer transformer) : base(game, spriteBatch, transformer) { }
+        public Canvas2d(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch) { }
 
         public override void Draw(SpriteBatch spriteBatch)
         {

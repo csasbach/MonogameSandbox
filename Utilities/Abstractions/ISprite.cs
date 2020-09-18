@@ -33,6 +33,11 @@ namespace Utilities.DrawableGameComponents
         /// </summary>
         void Initialize();
         /// <summary>
+        /// The standard Update override
+        /// </summary>
+        /// <param name="gameTime"></param>
+        void Update(GameTime gameTime);
+        /// <summary>
         /// The standard DrawableGameComponent override
         /// </summary>
         /// <param name="gameTime"></param>

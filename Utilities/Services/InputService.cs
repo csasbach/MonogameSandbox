@@ -12,6 +12,7 @@ namespace Utilities.Services
     {
         private FrameState _currentFrame;
         private FrameState _previousFrame;
+        public Point MousePosition => _currentFrame.MouseState.Position;
         public float ScrollWheelSensitivity { get; set; } = 0.01f;
 
         public InputService(Game game) : base(game, typeof(IInputService)) { }
@@ -60,8 +61,8 @@ namespace Utilities.Services
         /// <param name="keys"></param>
         public void OnReleased(Action del, Expression<Func<GamePadButtons, ButtonState>> buttonState, Expression<Func<MouseState, ButtonState>> mouseButtonState, params Keys[] keys)
         {
-            if (buttonState.Compile().Invoke(_currentFrame.GamePadState.Buttons) == ButtonState.Released &&
-                buttonState.Compile().Invoke(_previousFrame.GamePadState.Buttons) != ButtonState.Released ||
+            if (buttonState?.Compile().Invoke(_currentFrame.GamePadState.Buttons) == ButtonState.Released &&
+                buttonState?.Compile().Invoke(_previousFrame.GamePadState.Buttons) != ButtonState.Released ||
                 mouseButtonState?.Compile().Invoke(_currentFrame.MouseState) == ButtonState.Released &&
                 mouseButtonState?.Compile().Invoke(_previousFrame.MouseState) != ButtonState.Released ||
                 keys.Any(k => _currentFrame.KeyboardState.IsKeyUp(k) &&
@@ -94,8 +95,8 @@ namespace Utilities.Services
         /// <param name="keys"></param>
         public void OnPressed(Action del, Expression<Func<GamePadButtons, ButtonState>> buttonState, Expression<Func<MouseState, ButtonState>> mouseButtonState, params Keys[] keys)
         {
-            if (buttonState.Compile().Invoke(_currentFrame.GamePadState.Buttons) == ButtonState.Pressed &&
-                buttonState.Compile().Invoke(_previousFrame.GamePadState.Buttons) != ButtonState.Pressed ||
+            if (buttonState?.Compile().Invoke(_currentFrame.GamePadState.Buttons) == ButtonState.Pressed &&
+                buttonState?.Compile().Invoke(_previousFrame.GamePadState.Buttons) != ButtonState.Pressed ||
                 mouseButtonState?.Compile().Invoke(_currentFrame.MouseState) == ButtonState.Pressed &&
                 mouseButtonState?.Compile().Invoke(_previousFrame.MouseState) != ButtonState.Pressed ||
                 keys.Any(k => _currentFrame.KeyboardState.IsKeyDown(k) &&
@@ -128,8 +129,8 @@ namespace Utilities.Services
         /// <param name="keys"></param>
         public void OnHeld(Action del, Expression<Func<GamePadState, ButtonState>> buttonState, Expression<Func<MouseState, ButtonState>> mouseButtonState, params Keys[] keys)
         {
-            if (buttonState.Compile().Invoke(_currentFrame.GamePadState) == ButtonState.Pressed &&
-                buttonState.Compile().Invoke(_previousFrame.GamePadState) == ButtonState.Pressed ||
+            if (buttonState?.Compile().Invoke(_currentFrame.GamePadState) == ButtonState.Pressed &&
+                buttonState?.Compile().Invoke(_previousFrame.GamePadState) == ButtonState.Pressed ||
                 mouseButtonState?.Compile().Invoke(_currentFrame.MouseState) == ButtonState.Pressed &&
                 mouseButtonState?.Compile().Invoke(_previousFrame.MouseState) == ButtonState.Pressed ||
                 keys.Any(k => _currentFrame.KeyboardState.IsKeyDown(k) &&

@@ -9,10 +9,14 @@ namespace MonoGameSandbox.Scenes.Demo
 {
     public class DemoScene : Scene
     {
-        public DemoScene(Game game, SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause, IGameStateService gameState)
-            : base(game, spriteBatch, transformer, pause, gameState)
+        private readonly ICameraService _camera;
+        public DemoScene(Game game, SpriteBatch spriteBatch)
+            : base(game, spriteBatch)
         {
             BackgroundColor = Color.CadetBlue;
+            _camera = Game.Services.GetService<ICameraService>();
+            _camera.Enabled = true;
+            Transformer = _camera;
         }
 
         protected override void LoadContent()
@@ -20,11 +24,11 @@ namespace MonoGameSandbox.Scenes.Demo
             // a scene (or any object) can be responsible for instantiating
             // another root node, without having it be a child of the object insantiating it
             // if it makes sense for that node to be rendered independently
-            IndependentSprites.Add(new Hud(Game, SpriteBatch, null, Pause));
+            IndependentSprites.Add(new Hud(Game, SpriteBatch));
 
             var texture = new Texture2D(GraphicsDevice, 1, 1);
             texture.SetData(new[] { Color.White });
-            var _logFont = Game.Content.Load<SpriteFont>("LogFont");
+            var logFont = Game.Content.Load<SpriteFont>("LogFont");
             var arraySize = 20;
             var boxSize = 100;
             var gapSize = 10;
@@ -53,7 +57,7 @@ namespace MonoGameSandbox.Scenes.Demo
                     var labelText = $"{x},{y}";
                     var label = new StringSprite(Game, this)
                     {
-                        SpriteFont = _logFont,
+                        SpriteFont = logFont,
                         Text = () => labelText,
                         Position = new Vector2(xPos, yPos),
                         Color = Color.Black,
@@ -63,6 +67,12 @@ namespace MonoGameSandbox.Scenes.Demo
             }
 
             base.LoadContent();
+        }
+
+        protected override void UnloadContent()
+        {
+            _camera.Enabled = false;
+            base.UnloadContent();
         }
     }
 }

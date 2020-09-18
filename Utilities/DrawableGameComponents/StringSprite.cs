@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using Utilities.Abstractions;
 
 namespace Utilities.DrawableGameComponents
 {
@@ -21,7 +20,7 @@ namespace Utilities.DrawableGameComponents
         /// <param name="game"></param>
         /// <param name="spriteBatch"></param>
         /// <param name="transformer"></param>
-        public StringSprite(Game game, SpriteBatch spriteBatch, ITransformer transformer) : base(game, spriteBatch, transformer) { }
+        public StringSprite(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch) { }
 
         /// <summary>
         /// Child node constructor

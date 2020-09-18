@@ -8,14 +8,14 @@ namespace MonoGameSandbox.Scenes.Demo.DrawableGameComponents
     public sealed class Hud : Canvas2d
     {
         private readonly IPauseService _pause;
-        public Hud(Game game, SpriteBatch spriteBatch, ITransformer transformer, IPauseService pause) : base(game, spriteBatch, transformer)
+        public Hud(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
-            _pause = pause;
+            _pause = Game.Services.GetService<IPauseService>();
         }
 
         protected override void LoadContent()
         {
-            var _logFont = Game.Content.Load<SpriteFont>("LogFont");
+            var logFont = Game.Content.Load<SpriteFont>("LogFont");
             var graphics = Game.GraphicsDevice;
             var texture = new Texture2D(GraphicsDevice, 1, 1);
             texture.SetData(new[] { Color.White });
@@ -33,7 +33,7 @@ namespace MonoGameSandbox.Scenes.Demo.DrawableGameComponents
             var degreesFormat = @"+000;-000;+000";
             var stringSprite = new StringSprite(Game, this)
             {
-                SpriteFont = _logFont,
+                SpriteFont = logFont,
                 Text = () =>
                 {
                     return _pause?.Paused ?? false ? "PAUSED" : $"CamPos:X={camera?.Position.X.ToString(signedIntegerFormat)},Y={camera?.Position.Y.ToString(signedIntegerFormat)} " +
