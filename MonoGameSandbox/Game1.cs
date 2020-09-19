@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGameSandbox.GameComponents;
 using MonoGameSandbox.Scenes.MainMenu;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using Utilities.Abstractions;
+using Utilities.GameComponents;
 using Utilities.Services;
 
 namespace MonoGameSandbox
@@ -39,8 +39,8 @@ namespace MonoGameSandbox
         {
             Window.Title = "Sandbox";
             // graphics must be initialized starting here because GraphicsDevice is not yet available in constructor
-            _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
+            _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 200;
             _graphics.ApplyChanges();
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 

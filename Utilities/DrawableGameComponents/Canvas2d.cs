@@ -6,7 +6,7 @@ namespace Utilities.DrawableGameComponents
     /// <summary>
     /// A root node for grouping sprites
     /// </summary>
-    public class Canvas2d : SpriteBase
+    public abstract class Canvas2d : SpriteBase
     {
         /// <summary>
         /// Root node constructor

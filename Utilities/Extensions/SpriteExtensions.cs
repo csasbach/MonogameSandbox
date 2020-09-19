@@ -17,7 +17,8 @@ namespace Utilities.Extensions
             return new Button(sprite.Game, sprite)
             {
                 Position = position,
-                Texture = texture
+                Texture = texture,
+                LayerDepth = 1
             };
         }
     }

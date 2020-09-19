@@ -6,7 +6,7 @@ using Utilities.Extensions;
 using Utilities.Models;
 using Utilities.Services;
 
-namespace MonoGameSandbox.GameComponents
+namespace Utilities.GameComponents
 {
     public class Camera2dController : ComponentService, ICameraService
     {

@@ -8,5 +8,6 @@ namespace Utilities.Abstractions
     {
         Type GameState { get; }
         void SetGameState<T>(SpriteBatch spriteBatch) where T : Scene;
+        void SetGameState(Type sceneType, SpriteBatch spriteBatch);
     }
 }

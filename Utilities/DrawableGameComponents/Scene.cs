@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Reflection;
 using Utilities.Abstractions;
+using Utilities.Attributes;
 
 namespace Utilities.DrawableGameComponents
 {
@@ -26,6 +28,7 @@ namespace Utilities.DrawableGameComponents
 
         public Scene(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
+            SceneName = GetType().GetCustomAttribute<SceneAttribute>().DisplayName;
             Pause = Game.Services.GetService<IPauseService>();
             GameState = Game.Services.GetService<IGameStateService>();
         }
@@ -34,6 +37,7 @@ namespace Utilities.DrawableGameComponents
         {
             _gameTitle = _gameTitle ?? Game.Window.Title;
             Game.Window.Title = SceneName;
+
             base.Initialize();
         }
 
@@ -62,10 +66,12 @@ namespace Utilities.DrawableGameComponents
         protected override void UnloadContent()
         {
             Game.Window.Title = _gameTitle;
+
             foreach (var sprite in IndependentSprites)
             {
                 sprite.ForceUnloadContent();
             }
+
             base.UnloadContent();
         }
     }

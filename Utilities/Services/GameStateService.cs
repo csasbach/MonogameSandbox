@@ -16,8 +16,13 @@ namespace Utilities.Services
 
         public void SetGameState<T>(SpriteBatch spriteBatch) where T : Scene
         {
+            SetGameState(typeof(T), spriteBatch);
+        }
+
+        public void SetGameState(Type sceneType, SpriteBatch spriteBatch)
+        {
             // define the function that will set the new game state when Update is next called
-            _gameStateSetter = () => (T)Activator.CreateInstance(typeof(T), Game, spriteBatch);
+            _gameStateSetter = () => Activator.CreateInstance(sceneType, Game, spriteBatch) as Scene;
         }
 
         public override void Update(GameTime gameTime)
