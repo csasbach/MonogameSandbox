@@ -20,7 +20,7 @@ namespace Utilities.DrawableGameComponents
             set => _sceneName = value;
         }
         protected IGameStateService GameState { get; }
-        protected Color BackgroundColor { get; set; } = Color.Black;
+        protected Color BackgroundColor { get; set; } = Microsoft.Xna.Framework.Color.Black;
         protected IPauseService Pause { get; }
         protected List<ISprite> IndependentSprites { get; } = new List<ISprite>();
 

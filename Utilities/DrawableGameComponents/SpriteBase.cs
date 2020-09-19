@@ -11,6 +11,7 @@ namespace Utilities.DrawableGameComponents
     /// </summary>
     public abstract class SpriteBase : DrawableGameComponent, ISprite
     {
+        public new Game Game { get; }
         public ISprite Parent { get; private set; }
         public List<ISprite> Children { get; } = new List<ISprite>();
 
@@ -19,23 +20,22 @@ namespace Utilities.DrawableGameComponents
         /// </summary>
         private SpriteBatch _spriteBatch;
         public SpriteBatch SpriteBatch => _spriteBatch ?? Parent.SpriteBatch;
-        private Vector2 _position = Vector2.Zero;
-        public Vector2 Position { get => _position + (Parent?.Position ?? Vector2.Zero); set => _position = value; }
-        private Vector2 _origin = Vector2.Zero;
-        public Vector2 Origin { get => _origin + (Parent?.Origin ?? Vector2.Zero); set => _origin = value; }
-        private Vector2 _scale = Vector2.One;
-        public Vector2 Scale { get => _scale * (Parent?.Scale ?? Vector2.One); set => _scale = value; }
-        private float _rotation = 0.0f;
-        public float Rotation { get => _rotation + (Parent?.Rotation ?? 0.0f); set => _rotation = value; }
-        private float _layerDepth = 0.0f;
-        public float LayerDepth { get => _layerDepth + (Parent?.LayerDepth ?? 0.0f); set => _layerDepth = value; }
-        private SpriteEffects _effects = SpriteEffects.None;
-        public SpriteEffects Effects { get => _effects | (Parent?.Effects ?? _effects); set => _effects = value; }
-        public Color Color { get; set; } = Color.White;
-        public ITransformer Transformer { get; protected set; }
-
+        public Vector2 Position { get; set; } = Vector2.Zero;
+        public virtual int Width { get; }
+        public virtual int Height { get; }
+        public Rectangle LocalBounds => new Rectangle(0, 0, Width, Height);
+        public Vector2 Origin { get; set; }
+        public Vector2 Scale { get; set; } = Vector2.One;
+        public float Rotation { get; set; } = 0.0f;
+        public Matrix Transform => GetTransform();
+        public float LayerDepth { get; set; } = 0.0f;
+        public SpriteEffects Effects { get; set; }
+        public Color? Color { get; set; }
         public bool IsInitialized { get; protected set; }
-        protected IInputService Input { get; private set; }
+        /// <summary>
+        /// An object that can apply an additional transfor matrix at render time
+        /// </summary>
+        protected ITransformer Transformer { get; set; }
 
         /// <summary>
         /// Root node constructor
@@ -47,8 +47,8 @@ namespace Utilities.DrawableGameComponents
         /// <param name="transformer"></param>
         protected SpriteBase(Game game, SpriteBatch spriteBatch) : base(game)
         {
+            Game = game;
             _spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
-            Input = Game.Services.GetService<IInputService>();
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace Utilities.DrawableGameComponents
         /// <param name="parent"></param>
         protected SpriteBase(Game game, ISprite parent) : base(game)
         {
+            Game = game;
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Parent.Children.Add(this);
-            Input = Game.Services.GetService<IInputService>();
         }
 
         public override void Initialize()
@@ -178,6 +178,60 @@ namespace Utilities.DrawableGameComponents
 
             base.UnloadContent();
             Dispose();
+        }
+
+        /// <summary>
+        /// Creates a matrix composed of origin, scale, rotation, position, and parent transform
+        /// </summary>
+        /// <returns></returns>
+        protected Matrix GetTransform()
+        {
+            return Matrix.CreateTranslation(Origin.X, Origin.Y, 0.0f) *
+                   Matrix.CreateScale(Scale.X, Scale.Y, 1.0f) *
+                   Matrix.CreateRotationZ(Rotation) *
+                   Matrix.CreateTranslation(Position.X, Position.Y, 0.0f) *
+                   Parent?.Transform ?? Matrix.Identity;
+        }
+
+        /// <summary>
+        /// Determines if a point is between the globaly transformed bounds of this sprite
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        protected bool IsInBounds(Point point)
+        {
+            DecomposeTransform(GetTopLeftCorner(), out var topLeft, out _, out _);
+            DecomposeTransform(GetBottomRightCorner(), out var bottomRight, out _, out _);
+            return point.X > topLeft.X &&
+                point.Y > topLeft.Y
+                && point.X < bottomRight.X
+                && point.Y < bottomRight.Y;
+        }
+
+        /// <summary>
+        /// Breaks a transform down into its position, rotation, and scale
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <param name="position"></param>
+        /// <param name="rotation"></param>
+        /// <param name="scale"></param>
+        protected static void DecomposeTransform(Matrix matrix, out Vector2 position, out float rotation, out Vector2 scale)
+        {
+            matrix.Decompose(out Vector3 scale3, out Quaternion rotationQ, out Vector3 position3);
+            Vector2 direction = Vector2.Transform(Vector2.UnitX, rotationQ);
+            rotation = (float)Math.Atan2(direction.Y, direction.X);
+            position = new Vector2(position3.X, position3.Y);
+            scale = new Vector2(scale3.X, scale3.Y);
+        }
+
+        protected Matrix GetTopLeftCorner()
+        {
+            return GetTransform();
+        }
+
+        protected Matrix GetBottomRightCorner()
+        {
+            return Matrix.CreateTranslation(Width, Height, 0.0f) * GetTransform();
         }
     }
 }

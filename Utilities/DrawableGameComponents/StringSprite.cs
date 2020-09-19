@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Utilities.Extensions;
 
 namespace Utilities.DrawableGameComponents
 {
@@ -11,6 +12,8 @@ namespace Utilities.DrawableGameComponents
     {
         public SpriteFont SpriteFont { get; set; }
         public Func<string> Text { get; set; } = () => "";
+        public override int Width => SpriteFont.MeasureString(Text()).X.ToInt();
+        public override int Height => SpriteFont.MeasureString(Text()).Y.ToInt();
 
         /// <summary>
         /// Root node constructor
@@ -29,12 +32,17 @@ namespace Utilities.DrawableGameComponents
         /// </summary>
         /// <param name="game"></param>
         /// <param name="parent"></param>
-        public StringSprite(Game game, ISprite parent) : base(game, parent) { }
+        public StringSprite(Game game, ISprite parent) : base(game, parent)
+        {
+            if (parent is null) throw new ArgumentNullException(nameof(parent));
+        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (SpriteFont is null) return;
-            spriteBatch.DrawString(SpriteFont, Text(), Position, Color, Rotation, Origin, Scale, Effects, LayerDepth);
+
+            DecomposeTransform(Transform, out var position, out var rotation, out var scale);
+            spriteBatch.DrawString(SpriteFont, Text(), position, Color ?? Microsoft.Xna.Framework.Color.White, rotation, Origin, scale, Effects, LayerDepth);
         }
     }
 }

@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameSandbox.Scenes.Demo.DrawableGameComponents;
 using MonoGameSandbox.Scenes.MainMenu;
-using System;
 using Utilities.Abstractions;
 using Utilities.DrawableGameComponents;
+using Utilities.Extensions;
 
 namespace MonoGameSandbox.Scenes.Demo
 {
@@ -18,7 +18,7 @@ namespace MonoGameSandbox.Scenes.Demo
             : base(game, spriteBatch)
         {
             SceneName = "Demo";
-            BackgroundColor = Color.CadetBlue;
+            BackgroundColor = Microsoft.Xna.Framework.Color.CadetBlue;
             _camera = Game.Services.GetService<ICameraService>();
             _input = Game.Services.GetService<IInputService>();
             Transformer = _camera;
@@ -33,19 +33,18 @@ namespace MonoGameSandbox.Scenes.Demo
             // if it makes sense for that node to be rendered independently
             IndependentSprites.Add(new Hud(Game, SpriteBatch));
 
-            var texture = new Texture2D(GraphicsDevice, 1, 1);
-            texture.SetData(new[] { Color.White });
             var logFont = Game.Content.Load<SpriteFont>("LogFont");
             var arraySize = 20;
             var boxSize = 100;
             var gapSize = 10;
+            var texture = GraphicsDevice.CreateRectangleTexture(boxSize, boxSize);
             var viewportHorizontalCenter = Game.GraphicsDevice.Viewport.Width * 0.5f;
             var viewportVerticalCenter = Game.GraphicsDevice.Viewport.Height * 0.5f;
             int boxArrayDimension = arraySize * boxSize + (arraySize + 1) * gapSize;
             var boxArrayCenter = boxArrayDimension * 0.5f;
             int position(int index, float center)
             {
-                return (int)Math.Round((boxSize + gapSize) * (index - 1) + (center - boxArrayCenter));
+                return ((boxSize + gapSize) * (index - 1) + (center - boxArrayCenter)).ToInt();
             }
             for (var x = arraySize; x > 0; x--)
             {
@@ -57,8 +56,7 @@ namespace MonoGameSandbox.Scenes.Demo
                     {
                         Texture = texture,
                         Position = new Vector2(xPos, yPos),
-                        DestinationRectangle = new Rectangle(xPos, yPos, boxSize, boxSize),
-                        Color = Color.White,
+                        //Color = Microsoft.Xna.Framework.Color.White,
                         LayerDepth = 0.009999f
                     };
                     var labelText = $"{x},{y}";
@@ -67,7 +65,7 @@ namespace MonoGameSandbox.Scenes.Demo
                         SpriteFont = logFont,
                         Text = () => labelText,
                         Position = new Vector2(xPos, yPos),
-                        Color = Color.Black,
+                        Color = Microsoft.Xna.Framework.Color.Black,
                         LayerDepth = 0.009998f
                     };
                 }

@@ -9,14 +9,24 @@ namespace Utilities.DrawableGameComponents
     /// </summary>
     public interface ISprite
     {
-        bool IsInitialized { get; }
         Vector2 Position { get; set; }
-        Color Color { get; set; }
+        int Width { get; }
+        int Height { get; }
+        Rectangle LocalBounds { get; }
         float Rotation { get; set; }
-        Vector2 Origin { get; set; }
+        Vector2 Origin { get; }
         Vector2 Scale { get; set; }
-        SpriteEffects Effects { get; set; }
+        /// <summary>
+        /// Matrix used to calculate global position rotation and scale
+        /// </summary>
+        Matrix Transform { get; }
         float LayerDepth { get; set; }
+        Color? Color { get; set; }
+        SpriteEffects Effects { get; set; }
+        Game Game { get; }
+        /// <summary>
+        /// The SpriteBatch that will be used to draw this sprite
+        /// </summary>
         SpriteBatch SpriteBatch { get; }
         /// <summary>
         /// This sprite's parent in the sprite tree
@@ -28,6 +38,8 @@ namespace Utilities.DrawableGameComponents
         /// (empty if this sprite is a leaf node)
         /// </summary>
         List<ISprite> Children { get; }
+        bool IsInitialized { get; }
+
         /// <summary>
         /// The standard GameComponent override
         /// </summary>
