@@ -64,6 +64,8 @@ namespace Utilities.DrawableGameComponents
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Parent.Children.Add(this);
             Game = Parent.Game;
+
+            Logger = Game.Services.GetService<LoggerService>();
         }
 
         public override void Initialize()

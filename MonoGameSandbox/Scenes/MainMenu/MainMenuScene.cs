@@ -122,7 +122,13 @@ namespace MonoGameSandbox.Scenes.MainMenu
 
                     // if you've gone too far
                     if (y + buttonHeight > buttonArrayBounds.Height)
-                        throw new InvalidOperationException("You've got too many buttons for this simple implementation.");
+                    {
+                        var e = new InvalidOperationException("You've got too many buttons for this simple implementation.");
+
+                        Logger?.LogError(scope, "{BAB92C08-B381-4F6C-B992-307F2731FE32}", $"Too many buttons [{Stopwatch.GetTimestamp()}]", e);
+
+                        throw e;
+                    }
                 }
 
                 CreateAButton(logFont, buttonWidth, buttonHeight, x, y, link);
