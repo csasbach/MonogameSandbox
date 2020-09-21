@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Utilities.Abstractions;
 using Utilities.Services;
@@ -133,41 +134,62 @@ namespace Utilities.DrawableGameComponents
 
         public virtual void DetachFromTree(SpriteBatch spriteBatch)
         {
-            if (spriteBatch is null) throw new ArgumentNullException(nameof(spriteBatch));
-            if (Parent is null) throw new InvalidOperationException("A root node cannot be removed from the tree.");
+            using (var scope = Logger?.BeginScope($"{nameof(SpriteBase)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            {
+                Logger?.LogTrace(scope, "{91FC4B95-C782-4914-976A-791D26E2F00C}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
-            Parent.Children.Remove(this);
-            Parent = null;
-            _spriteBatch = spriteBatch;
-            // when this node becomes a root node it must be added to the game components list so that it will be included in the game loop
-            Game.Components.Add(this);
+                if (spriteBatch is null) throw new ArgumentNullException(nameof(spriteBatch));
+                if (Parent is null) throw new InvalidOperationException("A root node cannot be removed from the tree.");
+
+                Parent.Children.Remove(this);
+                Parent = null;
+                _spriteBatch = spriteBatch;
+                // when this node becomes a root node it must be added to the game components list so that it will be included in the game loop
+                Game.Components.Add(this);
+
+                Logger?.LogTrace(scope, "{C9F06B17-3D3C-4E56-BC10-34A51FE530DB}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         public virtual void SetSpriteBatch(SpriteBatch spriteBatch)
         {
-            if (spriteBatch is null) throw new ArgumentNullException(nameof(spriteBatch));
-            if (!(Parent is null)) throw new InvalidOperationException("You cannot set the SpriteBatch on a child node.");
+            using (var scope = Logger?.BeginScope($"{nameof(SpriteBase)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            {
+                Logger?.LogTrace(scope, "{0D4E0C37-A56C-4173-8086-E34D6E36DE61}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
-            _spriteBatch = spriteBatch;
+                if (spriteBatch is null) throw new ArgumentNullException(nameof(spriteBatch));
+                if (!(Parent is null)) throw new InvalidOperationException("You cannot set the SpriteBatch on a child node.");
+
+                _spriteBatch = spriteBatch;
+
+                Logger?.LogTrace(scope, "{89203EFD-7BD8-43BC-9305-C6CFCD2FD1C3}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         public virtual void SetParent(ISprite parent)
         {
-            if (parent is null) throw new ArgumentNullException(nameof(parent));
-
-            if (!(_spriteBatch is null))
+            using (var scope = Logger?.BeginScope($"{nameof(SpriteBase)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
             {
-                // if this node was a root, setting its parent makes it
-                // no longer a root, so it should have its SpriteBatch unset
-                // and this node should be removed from the Game's components list
-                Game.Components.Remove(this);
-                _spriteBatch = null;
+                Logger?.LogTrace(scope, "{21B5B113-85D0-46D4-A65E-C6BA2578FA1F}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
+                if (parent is null) throw new ArgumentNullException(nameof(parent));
+
+                if (!(_spriteBatch is null))
+                {
+                    // if this node was a root, setting its parent makes it
+                    // no longer a root, so it should have its SpriteBatch unset
+                    // and this node should be removed from the Game's components list
+                    Game.Components.Remove(this);
+                    _spriteBatch = null;
+                }
+
+                // if this node already had a parent, remove it from that parent's children
+                Parent?.Children.Remove(this);
+
+                Parent = parent;
+
+                Logger?.LogTrace(scope, "{31D0103C-91F0-4ED9-97D1-A929DD50294D}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
             }
-
-            // if this node already had a parent, remove it from that parent's children
-            Parent?.Children.Remove(this);
-
-            Parent = parent;
         }
 
         public void ForceUnloadContent()
