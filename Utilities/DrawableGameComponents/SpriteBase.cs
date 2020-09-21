@@ -83,7 +83,10 @@ namespace Utilities.DrawableGameComponents
             // An event is fired that calls LoadContent on components whenever they are added to a GameComponentCollection
             // therefore, I have opted to add the components here rather than in the consturctor, otherwise constructor
             // chains and hierarchy resolution order in related components can become a difficult to manage problem
-            Game.Components.Add(this);
+            if(!(_spriteBatch is null))
+            {
+                Game.Components.Add(this);
+            }
 
             base.LoadContent();
         }
