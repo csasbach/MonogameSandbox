@@ -46,6 +46,9 @@ namespace MonoGameSandbox
 
         protected override void Initialize()
         {
+            using var scope = _logger?.BeginScope($"{nameof(Game1)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            _logger?.LogTrace(scope, "{60B0C932-3DE3-47C1-AAEF-4497EF00D752}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             Window.Title = "Sandbox";
             // graphics must be initialized starting here because GraphicsDevice is not yet available in constructor
             _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
@@ -58,8 +61,12 @@ namespace MonoGameSandbox
             // the scenes themselves
             _gameState.SetGameState<MainMenuScene>(_spriteBatch);
 
+            _logger?.LogTrace(scope, "{E977152D-0077-45B2-A52C-B086F00387AB}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
+
             // game components will have their Initialize() methods called here if you instantiated them above
             base.Initialize();
+
+            _logger?.LogTrace(scope, "{152B407E-C092-4295-BC46-E8117C401D0F}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]

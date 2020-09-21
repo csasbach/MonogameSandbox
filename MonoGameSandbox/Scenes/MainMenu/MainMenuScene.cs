@@ -4,11 +4,13 @@ using MonoGameSandbox.Scenes.Simple2dCameraDemo;
 using MonoGameSandbox.Scenes.SomeOtherDemo;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Utilities.Attributes;
 using Utilities.DrawableGameComponents;
 using Utilities.Extensions;
+using Utilities.Services;
 
 namespace MonoGameSandbox.Scenes.MainMenu
 {
@@ -20,12 +22,20 @@ namespace MonoGameSandbox.Scenes.MainMenu
         public MainMenuScene(Game game, SpriteBatch spriteBatch)
             : base(game, spriteBatch)
         {
+            using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{4B90083B-F0E0-4C84-9184-8527908D0392}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             BackgroundColor = Microsoft.Xna.Framework.Color.Black;
             InitializeSceneLinks();
+
+            Logger?.LogTrace(scope, "{75F7347E-11C9-4B5E-B596-C155BE30FC54}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
 
         protected override void LoadContent()
         {
+            using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{C983C39D-19A8-4F37-8362-36706621536D}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             var titleFont = Game.Content.Load<SpriteFont>("MenuTitleFont");
             var logFont = Game.Content.Load<SpriteFont>("LogFont");
 
@@ -34,7 +44,11 @@ namespace MonoGameSandbox.Scenes.MainMenu
             CreateTitle(titleFont, viewportCenter);
             CreateButtonArray(logFont, viewportCenter);
 
+            Logger?.LogTrace(scope, "{627638E6-C88C-4D3C-BE6D-6FCF02445954}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
+
             base.LoadContent();
+
+            Logger?.LogTrace(scope, "{D111AC5B-8A9C-4A9A-B413-8826829908D5}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
         }
 
         public override void Update(GameTime gameTime)
@@ -52,6 +66,9 @@ namespace MonoGameSandbox.Scenes.MainMenu
 
         private void InitializeSceneLinks()
         {
+            using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{98F8AC0D-7455-4E71-BE1D-111263933ADC}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             _sceneLinks[typeof(Simple2dCameraDemoScene)] = null;
             _sceneLinks[typeof(Demo01)] = null;
             _sceneLinks[typeof(Demo02)] = null;
@@ -61,17 +78,27 @@ namespace MonoGameSandbox.Scenes.MainMenu
             _sceneLinks[typeof(Demo06)] = null;
             _sceneLinks[typeof(Demo07)] = null;
             _sceneLinks[typeof(Demo08)] = null;
+
+            Logger?.LogTrace(scope, "{647D63CB-4FCA-4BC3-8F0E-74888BFE5FA4}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
 
         private void CreateTitle(SpriteFont titleFont, Vector2 viewportCenter)
         {
+            using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{C9424696-E23C-46AA-9917-BD842B7E82DD}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             static string text() => "Select a Demo";
             var titleWidth = titleFont.MeasureString(text()).X;
             this.AddStringSprite(new Vector2(viewportCenter.X - titleWidth * 0.5f, 70), titleFont, text);
+
+            Logger?.LogTrace(scope, "{D13CCB04-E6B3-4B8E-A944-F2031EC19637}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
 
         private void CreateButtonArray(SpriteFont logFont, Vector2 viewportCenter)
         {
+            using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{E1F74DD6-78F8-465C-9814-1CE2818D7442}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             var buttonWidth = 500;
             var buttonHeight = 60;
             var gutter = 30;
@@ -105,10 +132,15 @@ namespace MonoGameSandbox.Scenes.MainMenu
             }
 
             CenterButttonArray(viewportCenter, actualButtonArrayWidth);
+
+            Logger?.LogTrace(scope, "{AEF14D98-A473-425A-B37B-FF4FB245257F}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
 
         private void CreateAButton(SpriteFont logFont, int buttonWidth, int buttonHeight, int x, int y, KeyValuePair<Type, Button> link)
         {
+            using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{8DE69395-76CE-4EBB-8A73-4471B6224DBD}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             var labelText = link.Key.GetCustomAttribute<SceneAttribute>().DisplayName;
             _sceneLinks[link.Key] = this.AddButton(
                 new Vector2(x, y),
@@ -121,15 +153,22 @@ namespace MonoGameSandbox.Scenes.MainMenu
                 Microsoft.Xna.Framework.Color.LightGray,
                 Microsoft.Xna.Framework.Color.White,
                 Microsoft.Xna.Framework.Color.Aqua);
+
+            Logger?.LogTrace(scope, "{94734262-60C1-4EE4-803A-D478AE155F47}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
 
         private void CenterButttonArray(Vector2 viewportCenter, int actualButtonArrayWidth)
         {
+            using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{FFB252DC-0456-4CDC-9B08-EEAB555279CB}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             var actualButtonArrayMiddle = actualButtonArrayWidth * 0.5f;
             foreach (var button in _sceneLinks.Values)
             {
                 button.Position += new Vector2(viewportCenter.X - actualButtonArrayMiddle, 0);
             }
+
+            Logger?.LogTrace(scope, "{FFB252DC-0456-4CDC-9B08-EEAB555279CB}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
     }
 }

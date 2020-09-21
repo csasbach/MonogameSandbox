@@ -3,10 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameSandbox.Scenes.MainMenu;
 using MonoGameSandbox.SharedComponents;
+using System.Diagnostics;
 using Utilities.Abstractions;
 using Utilities.Attributes;
 using Utilities.DrawableGameComponents;
 using Utilities.Extensions;
+using Utilities.Services;
 
 namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
 {
@@ -19,6 +21,9 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
         public Simple2dCameraDemoScene(Game game, SpriteBatch spriteBatch)
             : base(game, spriteBatch)
         {
+            using var scope = Logger?.BeginScope($"{nameof(Simple2dCameraDemoScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{82DBEF8D-2232-4999-B2E4-16A05F4D0439}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             // using service location pattern to access services in constructors
             // of game objects
             _camera = Game.Services.GetService<ICameraService>();
@@ -26,10 +31,15 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
             Transformer = _camera;
 
             BackgroundColor = Microsoft.Xna.Framework.Color.CadetBlue;
+
+            Logger?.LogTrace(scope, "{C1952E44-54E8-43DF-AFF7-4913774D6609}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
 
         protected override void LoadContent()
         {
+            using var scope = Logger?.BeginScope($"{nameof(Simple2dCameraDemoScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{9B4A72CF-AB97-46D3-9825-5753EFE5E50B}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             var logFont = Game.Content.Load<SpriteFont>("LogFont");
 
             // a scene can be responsible for instantiating
@@ -52,7 +62,11 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
             // just something to look at with the camera
             CreateBoxArray(logFont);
 
+            Logger?.LogTrace(scope, "{1893C918-D4F2-4BF7-A10B-E560C5AFBEA7}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
+
             base.LoadContent();
+
+            Logger?.LogTrace(scope, "{959C9D69-85E1-463D-B107-37A859851087}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
         }
 
         public override void Update(GameTime gameTime)
@@ -64,13 +78,23 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
 
         protected override void UnloadContent()
         {
+            using var scope = Logger?.BeginScope($"{nameof(Simple2dCameraDemoScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{9B4A72CF-AB97-46D3-9825-5753EFE5E50B}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             _camera.Enabled = false;
 
+            Logger?.LogTrace(scope, "{1893C918-D4F2-4BF7-A10B-E560C5AFBEA7}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
+
             base.UnloadContent();
+
+            Logger?.LogTrace(scope, "{959C9D69-85E1-463D-B107-37A859851087}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
         }
 
         private void CreateBoxArray(SpriteFont logFont)
         {
+            using var scope = Logger?.BeginScope($"{nameof(Simple2dCameraDemoScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+            Logger?.LogTrace(scope, "{4E60DA2C-98EC-4411-9394-E911831BD5F2}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
             var arraySize = 20;
             var boxSize = 100;
             var gapSize = 10;
@@ -95,6 +119,8 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
                     label.Color = Microsoft.Xna.Framework.Color.Black;
                 }
             }
+
+            Logger?.LogTrace(scope, "{F2E2516F-F5A3-49CA-A601-A0E3867CDAD2}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
     }
 }
