@@ -11,6 +11,7 @@ namespace Utilities.Services
     public abstract class ComponentService : GameComponent
     {
         protected LoggerService Logger { get; }
+
         protected ComponentService(Game game, Type serviceType) : base(game)
         {
             if (!serviceType.IsInstanceOfType(this)) throw new InvalidOperationException($"This service must be an instance of {serviceType.Name}.");

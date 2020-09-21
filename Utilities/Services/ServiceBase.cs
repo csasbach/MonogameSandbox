@@ -13,6 +13,7 @@ namespace Utilities.Services
     {
         protected LoggerService Logger { get; }
         protected Game Game { get; }
+
         protected ServiceBase(Game game, Type serviceType)
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));

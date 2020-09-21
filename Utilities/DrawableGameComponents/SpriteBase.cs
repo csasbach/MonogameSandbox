@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Utilities.Abstractions;
 using Utilities.Services;
 
@@ -171,26 +172,52 @@ namespace Utilities.DrawableGameComponents
 
         public void ForceUnloadContent()
         {
-            UnloadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            // remove this from the game coponents list
+            // if this is a root node then 
+            // remove it from the game coponents list
             if (!(_spriteBatch is null))
             {
+                // NOTE: This will end up firing an event that
+                // results in UnloadContent being called but we
+                // can neither wait nor rely on that if we want
+                // this to behave nicely
                 Game.Components.Remove(this);
             }
 
+            // this ensures we don't try to call UnloadContent
+            // after it has already been called for this sprite
+            if (isUnloading) return;
+
+            // this ensures UnloadContent is called synchronously
+            // and for non-root nodes as well
+            UnloadContent();
+        }
+
+        protected bool isUnloading = false;
+        protected override void UnloadContent()
+        {
+            // this mechanism will prevent follow-up
+            // events such as that fired by the GameComponentsCollection
+            // from tryin got Unload the content more than once
+            isUnloading = true;
+
             // remove this from its parent
             Parent?.Children.Remove(this);
+
+            // unload and remove all of its children
+            var sweep = new ISprite[Children.Count];
+            Children.CopyTo(sweep);
+            foreach(var child in sweep)
+            {
+                Children.ElementAt(Children.IndexOf(child)).ForceUnloadContent();
+                Children.Remove(child);
+            }
 
             // peform base unload duties
             base.UnloadContent();
 
             // make sure this thing is completely removed from
             // memory as there are many ways in which references
-            // might potentially linger otherwise
+            // to it and its children might potentially linger otherwise
             Dispose();
         }
 
