@@ -159,7 +159,7 @@ namespace Utilities.DrawableGameComponents
             {
                 // if this node was a root, setting its parent makes it
                 // no longer a root, so it should have its SpriteBatch unset
-                // and be removed from the Game's components list
+                // and this node should be removed from the Game's components list
                 Game.Components.Remove(this);
                 _spriteBatch = null;
             }
@@ -197,7 +197,8 @@ namespace Utilities.DrawableGameComponents
         {
             // this mechanism will prevent follow-up
             // events such as that fired by the GameComponentsCollection
-            // from tryin got Unload the content more than once
+            // from trying to Unload the content more than once
+            if (isUnloading) return;
             isUnloading = true;
 
             // remove this from its parent
@@ -212,7 +213,7 @@ namespace Utilities.DrawableGameComponents
                 Children.Remove(child);
             }
 
-            // peform base unload duties
+            // perform base unload duties
             base.UnloadContent();
 
             // make sure this thing is completely removed from

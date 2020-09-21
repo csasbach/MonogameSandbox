@@ -90,6 +90,12 @@ namespace Utilities.DrawableGameComponents
 
         protected override void UnloadContent()
         {
+            // this mechanism will prevent follow-up
+            // events such as that fired by the GameComponentsCollection
+            // from trying to Unload the content more than once
+            if (isUnloading) return;
+            isUnloading = true;
+
             using (var scope = Logger?.BeginScope($"{nameof(Scene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
             {
                 Logger?.LogTrace(scope, "{FA8ED8F2-EFDC-43C9-B482-C512EEB21CFB}", $"Started [{Stopwatch.GetTimestamp()}]", null);
