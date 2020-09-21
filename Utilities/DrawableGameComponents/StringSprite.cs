@@ -17,27 +17,23 @@ namespace Utilities.DrawableGameComponents
 
         /// <summary>
         /// Root node constructor
-        /// requires the SpriteBatch and ITransformer that will be used by
+        /// requires the Game and SpriteBatch that will be used by
         /// this sprite and every sprite in its tree
         /// </summary>
         /// <param name="game"></param>
         /// <param name="spriteBatch"></param>
-        /// <param name="transformer"></param>
         public StringSprite(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch) { }
 
         /// <summary>
         /// Child node constructor
-        /// inherits SpriteBatch and ITransformer from its ancestor root node
-        /// via the parent
         /// </summary>
-        /// <param name="game"></param>
         /// <param name="parent"></param>
-        public StringSprite(Game game, ISprite parent) : base(game, parent)
+        public StringSprite(ISprite parent) : base(parent)
         {
             if (parent is null) throw new ArgumentNullException(nameof(parent));
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        protected override void Draw(SpriteBatch spriteBatch)
         {
             if (SpriteFont is null) return;
 

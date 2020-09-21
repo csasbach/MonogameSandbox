@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Utilities.Abstractions;
 using Utilities.Attributes;
+using Utilities.Services;
 
 namespace Utilities.DrawableGameComponents
 {
@@ -26,19 +28,42 @@ namespace Utilities.DrawableGameComponents
         protected IPauseService Pause { get; }
         protected List<ISprite> IndependentSprites { get; } = new List<ISprite>();
 
+        /// <summary>
+        /// Root node constructor
+        /// requires the Game and SpriteBatch that will be used by
+        /// this sprite and every sprite in its tree
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="spriteBatch"></param>
         public Scene(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
-            SceneName = GetType().GetCustomAttribute<SceneAttribute>().DisplayName;
-            Pause = Game.Services.GetService<IPauseService>();
-            GameState = Game.Services.GetService<IGameStateService>();
+            using (var scope = Logger?.BeginScope($"{nameof(Scene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            {
+                Logger?.LogTrace(scope, "{6FF9A266-8330-4E02-882B-3DF1A380B5D5}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
+                SceneName = GetType().GetCustomAttribute<SceneAttribute>().DisplayName;
+                Pause = Game.Services.GetService<IPauseService>();
+                GameState = Game.Services.GetService<IGameStateService>();
+
+                Logger?.LogTrace(scope, "{996C333E-0E7D-448A-84CE-A654CB297095}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         public override void Initialize()
         {
-            _gameTitle = _gameTitle ?? Game.Window.Title;
-            Game.Window.Title = SceneName;
+            using (var scope = Logger?.BeginScope($"{nameof(Scene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            {
+                Logger?.LogTrace(scope, "{123492DD-B31A-466E-A5C6-BA3D7CA7BBCD}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
-            base.Initialize();
+                _gameTitle = _gameTitle ?? Game.Window.Title;
+                Game.Window.Title = SceneName;
+
+                Logger?.LogTrace(scope, "{30A5EE10-0E07-4A18-8621-D999BDB58E97}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
+
+                base.Initialize();
+
+                Logger?.LogTrace(scope, "{F71971FC-B236-4CBD-AC45-9F7600FF7906}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -51,7 +76,7 @@ namespace Utilities.DrawableGameComponents
             base.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        protected override void Draw(SpriteBatch spriteBatch)
         {
             // not drawing when paused saves resources
             if (Pause.Paused) return;
@@ -65,14 +90,23 @@ namespace Utilities.DrawableGameComponents
 
         protected override void UnloadContent()
         {
-            Game.Window.Title = _gameTitle;
-
-            foreach (var sprite in IndependentSprites)
+            using (var scope = Logger?.BeginScope($"{nameof(Scene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
             {
-                sprite.ForceUnloadContent();
-            }
+                Logger?.LogTrace(scope, "{FA8ED8F2-EFDC-43C9-B482-C512EEB21CFB}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
-            base.UnloadContent();
+                Game.Window.Title = _gameTitle;
+
+                foreach (var sprite in IndependentSprites)
+                {
+                    sprite.ForceUnloadContent();
+                }
+
+                Logger?.LogTrace(scope, "{5229B282-872C-43A9-927B-070614904148}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
+
+                base.UnloadContent();
+
+                Logger?.LogTrace(scope, "{29490D81-069E-41C7-B937-0ED622C2B072}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using Utilities.Abstractions;
@@ -15,7 +16,11 @@ namespace Utilities.Services
         public Point MousePosition => _currentFrame.MouseState.Position;
         public float ScrollWheelSensitivity { get; set; } = 0.01f;
 
-        public InputService(Game game) : base(game, typeof(IInputService)) { }
+        public InputService(Game game) : base(game, typeof(IInputService))
+        {
+            using (var scope = Logger?.BeginScope($"{nameof(InputService)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+                Logger?.LogTrace(scope, "{0BEC1860-B45A-43E8-B82C-D396A4D04BBA}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
+        }
 
         public override void Update(GameTime gameTime)
         {

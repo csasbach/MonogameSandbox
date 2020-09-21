@@ -55,11 +55,6 @@ namespace Utilities.DrawableGameComponents
         /// <param name="gameTime"></param>
         void Draw(GameTime gameTime);
         /// <summary>
-        /// A special draw method for ISprite where spriteBatch's Draw method will be called
-        /// </summary>
-        /// <param name="spriteBatch"></param>
-        void Draw(SpriteBatch spriteBatch);
-        /// <summary>
         /// Makes this sprite the root of its own sprite tree
         /// </summary>
         /// <param name="spriteBatch"></param>

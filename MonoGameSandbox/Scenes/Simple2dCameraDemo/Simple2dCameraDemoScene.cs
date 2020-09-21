@@ -39,17 +39,14 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
             var hud = new Hud(Game, SpriteBatch);
             // we can add more content to the Hud if we want
             static string text() => "Camera: '(,)' Rotate | '<,>,ScroolWheel' Zoom | 'W,A,S,D,Arrow Keys' Move | 'R' Reset";
-            new StringSprite(Game, hud)
-            {
-                SpriteFont = logFont,
-                Text = text,
-                Position = new Vector2(Game.GraphicsDevice.Viewport.Width - (logFont.MeasureString(text()).X + 10), Game.GraphicsDevice.Viewport.Height - 30)
-            };
+            var position = new Vector2(Game.GraphicsDevice.Viewport.Width - (logFont.MeasureString(text()).X + 10), Game.GraphicsDevice.Viewport.Height - 30);
+            hud.AddStringSprite(position, logFont, text);
             // but then that node should be registered under IndependentSprites in the scene
             // so that its drawable game component methods will be called
             IndependentSprites.Add(hud);
 
             // camera is disabled by default to prevent it running during times when it should not be
+            // so we need to explicitly enable it here
             _camera.Enabled = true;
 
             // just something to look at with the camera
@@ -68,6 +65,7 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
         protected override void UnloadContent()
         {
             _camera.Enabled = false;
+
             base.UnloadContent();
         }
 
@@ -91,22 +89,10 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
                 {
                     var xPos = position(x, viewportHorizontalCenter);
                     var yPos = position(y, viewportVerticalCenter);
-                    var box = new Sprite(Game, this)
-                    {
-                        Texture = texture,
-                        Position = new Vector2(xPos, yPos),
-                        //Color = Microsoft.Xna.Framework.Color.White,
-                        LayerDepth = 0.009999f
-                    };
+                    var box = this.AddSprite(new Vector2(xPos, yPos), texture);
                     var labelText = $"{x},{y}";
-                    var label = new StringSprite(Game, this)
-                    {
-                        SpriteFont = logFont,
-                        Text = () => labelText,
-                        Position = new Vector2(xPos, yPos),
-                        Color = Microsoft.Xna.Framework.Color.Black,
-                        LayerDepth = 0.009998f
-                    };
+                    var label = box.AddStringSprite(Vector2.Zero, logFont, () => labelText);
+                    label.Color = Microsoft.Xna.Framework.Color.Black;
                 }
             }
         }

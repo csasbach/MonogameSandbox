@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
 using Utilities.Abstractions;
 using Utilities.Extensions;
 using Utilities.Models;
@@ -22,26 +23,49 @@ namespace Utilities.GameComponents
 
         public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, IInputService inputService) : base(game, typeof(ICameraService))
         {
-            _graphicsDeviceManager = graphicsDeviceManager;
-            _input = inputService;
-            Enabled = false;
+            using (var scope = Logger?.BeginScope($"{nameof(Camera2dController)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            {
+                Logger?.LogTrace(scope, "{EF9CE49A-FAEE-4CF0-89B9-101A99BCBCD0}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
+                _graphicsDeviceManager = graphicsDeviceManager;
+                _input = inputService;
+                Enabled = false;
+
+                Logger?.LogTrace(scope, "{38754872-0D05-415E-B821-013F55E25BE9}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, ICameraOptions cameraOptions, IInputService inputService) : base(game, typeof(ICameraService))
         {
-            _graphicsDeviceManager = graphicsDeviceManager;
-            _cameraOptions = cameraOptions;
-            _input = inputService;
-            Enabled = false;
+            using (var scope = Logger?.BeginScope($"{nameof(Camera2dController)} {System.Reflection.MethodBase.GetCurrentMethod().Name} (with {nameof(cameraOptions)})"))
+            {
+                Logger?.LogTrace(scope, "{37176C0D-E134-49BA-AB89-ECD9284DF072}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
+                _graphicsDeviceManager = graphicsDeviceManager;
+                _cameraOptions = cameraOptions;
+                _input = inputService;
+                Enabled = false;
+
+                Logger?.LogTrace(scope, "{1BED4B9E-71D9-47E8-AE52-24C9BE6380B0}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         public override void Initialize()
         {
-            _camera = _cameraOptions is null ?
-                new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport) :
-                new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport, _cameraOptions);
+            using (var scope = Logger?.BeginScope($"{nameof(Camera2dController)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            {
+                Logger?.LogTrace(scope, "{F0005F3C-A6AB-4F2D-8316-C922B299624B}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
-            base.Initialize();
+                _camera = _cameraOptions is null ?
+                    new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport) :
+                    new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport, _cameraOptions);
+
+                Logger?.LogTrace(scope, "{83579F22-0071-4A58-B544-5C7AF36E61F1}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
+
+                base.Initialize();
+
+                Logger?.LogTrace(scope, "{D8D820C9-681E-42D9-9B35-83FF1F960B44}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         public override void Update(GameTime gameTime)

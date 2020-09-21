@@ -67,12 +67,7 @@ namespace MonoGameSandbox.Scenes.MainMenu
         {
             static string text() => "Select a Demo";
             var titleWidth = titleFont.MeasureString(text()).X;
-            new StringSprite(Game, this)
-            {
-                SpriteFont = titleFont,
-                Position = new Vector2(viewportCenter.X - titleWidth * 0.5f, 70),
-                Text = text
-            };
+            this.AddStringSprite(new Vector2(viewportCenter.X - titleWidth * 0.5f, 70), titleFont, text);
         }
 
         private void CreateButtonArray(SpriteFont logFont, Vector2 viewportCenter)

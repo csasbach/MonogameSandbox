@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameSandbox.Scenes.MainMenu;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
 using Utilities.Abstractions;
 using Utilities.GameComponents;
@@ -20,6 +22,7 @@ namespace MonoGameSandbox
         private readonly IInputService _input;
         private readonly IPauseService _pause;
         private readonly IGameStateService _gameState;
+        private readonly LoggerService _logger;
 
         public Game1()
         {
@@ -28,11 +31,17 @@ namespace MonoGameSandbox
             IsMouseVisible = true;
 
             // services and controllers for non-graphical game components can be instantiated here
+            _logger = new LoggerService(this);
+            _logger.AddLogQueue(new DebugLogQueue());
+            _logger.SetLogLevel(LogLevel.Trace);
+            using var scope = _logger.BeginScope($"{nameof(Game1)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
+
             _input = new InputService(this);
             _pause = new PauseService(this, _input);
             _gameState = new GameStateService(this);
-
             new Camera2dController(this, _graphics, _input);
+
+            _logger.LogInfo(scope, "8DE9D77C-531A-4101-B2A3-32F3C51A4863", $"Finished[{Stopwatch.GetTimestamp()}]", null);
         }
 
         protected override void Initialize()

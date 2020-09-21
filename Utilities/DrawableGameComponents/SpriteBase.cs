@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Utilities.Abstractions;
+using Utilities.Services;
 
 namespace Utilities.DrawableGameComponents
 {
@@ -14,7 +15,6 @@ namespace Utilities.DrawableGameComponents
         public new Game Game { get; }
         public ISprite Parent { get; private set; }
         public List<ISprite> Children { get; } = new List<ISprite>();
-
         /// <summary>
         /// SpriteBatch is only set when this node is made a root node.
         /// </summary>
@@ -36,38 +36,38 @@ namespace Utilities.DrawableGameComponents
         /// An object that can apply an additional transfor matrix at render time
         /// </summary>
         protected ITransformer Transformer { get; set; }
+        protected LoggerService Logger { get; }
 
         /// <summary>
         /// Root node constructor
-        /// requires the SpriteBatch and ITransformer that will be used by
+        /// requires the Game and SpriteBatch that will be used by
         /// this sprite and every sprite in its tree
         /// </summary>
         /// <param name="game"></param>
         /// <param name="spriteBatch"></param>
-        /// <param name="transformer"></param>
         protected SpriteBase(Game game, SpriteBatch spriteBatch) : base(game)
         {
             Game = game;
-            _spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
+            _spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch)); 
+            
+            Logger = Game.Services.GetService<LoggerService>();
         }
 
         /// <summary>
         /// Child node constructor
-        /// inherits SpriteBatch and ITransformer from its ancestor root node
-        /// via the parent
         /// </summary>
-        /// <param name="game"></param>
         /// <param name="parent"></param>
-        protected SpriteBase(Game game, ISprite parent) : base(game)
+        protected SpriteBase(ISprite parent) : base(parent.Game)
         {
-            Game = game;
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Parent.Children.Add(this);
+            Game = Parent.Game;
         }
 
         public override void Initialize()
         {
             IsInitialized = true;
+
             base.Initialize();
         }
 
@@ -124,12 +124,16 @@ namespace Utilities.DrawableGameComponents
             }
         }
 
-        public abstract void Draw(SpriteBatch spriteBatch);
+        /// <summary>
+        /// Override this method with the code for rendering the sprite implementation
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        protected abstract void Draw(SpriteBatch spriteBatch);
 
         public virtual void DetachFromTree(SpriteBatch spriteBatch)
         {
             if (spriteBatch is null) throw new ArgumentNullException(nameof(spriteBatch));
-            if (Parent is null) throw new InvalidOperationException("The root node cannot be removed from the tree.");
+            if (Parent is null) throw new InvalidOperationException("A root node cannot be removed from the tree.");
 
             Parent.Children.Remove(this);
             Parent = null;
@@ -150,9 +154,11 @@ namespace Utilities.DrawableGameComponents
         {
             if (parent is null) throw new ArgumentNullException(nameof(parent));
 
-            // if this node stops being a root node it no longer needs to be included in the game loop
             if (!(_spriteBatch is null))
             {
+                // if this node was a root, setting its parent makes it
+                // no longer a root, so it should have its SpriteBatch unset
+                // and be removed from the Game's components list
                 Game.Components.Remove(this);
                 _spriteBatch = null;
             }
@@ -170,13 +176,21 @@ namespace Utilities.DrawableGameComponents
 
         protected override void UnloadContent()
         {
+            // remove this from the game coponents list
             if (!(_spriteBatch is null))
             {
                 Game.Components.Remove(this);
             }
+
+            // remove this from its parent
             Parent?.Children.Remove(this);
 
+            // peform base unload duties
             base.UnloadContent();
+
+            // make sure this thing is completely removed from
+            // memory as there are many ways in which references
+            // might potentially linger otherwise
             Dispose();
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 using Utilities.Abstractions;
 
 namespace Utilities.Services
@@ -12,7 +13,14 @@ namespace Utilities.Services
 
         public PauseService(Game game, IInputService input) : base(game, typeof(IPauseService))
         {
-            _input = input;
+            using (var scope = Logger?.BeginScope($"{nameof(PauseService)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            {
+                Logger?.LogTrace(scope, "{C34011B7-9549-4343-BC5B-09DE58ECB9D2}", $"Started [{Stopwatch.GetTimestamp()}]", null);
+
+                _input = input;
+
+                Logger?.LogTrace(scope, "{DC6844DF-6B19-4A86-A840-D1B720965F32}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
+            }
         }
 
         /// <summary>

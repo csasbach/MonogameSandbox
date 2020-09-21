@@ -30,26 +30,11 @@ namespace Utilities.DrawableGameComponents
         protected Color? TextMouseOutColor { get; set; }
 
         /// <summary>
-        /// Root node constructor
-        /// requires the SpriteBatch and ITransformer that will be used by
-        /// this sprite and every sprite in its tree
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="spriteBatch"></param>
-        /// <param name="transformer"></param>
-        public Button(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
-        {
-            Input = Game.Services.GetService<IInputService>();
-        }
-
-        /// <summary>
         /// Child node constructor
-        /// inherits SpriteBatch and ITransformer from its ancestor root node
-        /// via the parent
         /// </summary>
         /// <param name="game"></param>
         /// <param name="parent"></param>
-        public Button(Game game, ISprite parent) : base(game, parent)
+        public Button(ISprite parent) : base(parent)
         {
             Input = Game.Services.GetService<IInputService>();
         }
@@ -119,7 +104,7 @@ namespace Utilities.DrawableGameComponents
         {
             var textSize = logFont.MeasureString(stringFunction());
             var textBoundingBox = new Rectangle(0, 0, textSize.X.ToInt(), textSize.Y.ToInt());
-            _label = new StringSprite(Game, this)
+            _label = new StringSprite(this)
             {
                 Position = textBoundingBox.CenterInside(Texture.Bounds),
                 SpriteFont = logFont,
