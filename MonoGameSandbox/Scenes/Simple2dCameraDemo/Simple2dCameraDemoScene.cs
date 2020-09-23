@@ -42,25 +42,37 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
 
             var logFont = Game.Content.Load<SpriteFont>("LogFont");
 
-            // a scene can be responsible for instantiating
-            // another root node, without having it be a child of the object insantiating it
-            // if it makes sense for that node to be rendered independently, such as components
-            // not rendered in the main camera view
-            var hud = new Hud(Game, SpriteBatch);
-            // we can add more content to the Hud if we want
-            static string text() => "Camera: '(,)' Rotate | '<,>,ScroolWheel' Zoom | 'W,A,S,D,Arrow Keys' Move | 'R' Reset";
-            var position = new Vector2(Game.GraphicsDevice.Viewport.Width - (logFont.MeasureString(text()).X + 10), Game.GraphicsDevice.Viewport.Height - 30);
-            hud.AddStringSprite(position, logFont, text);
-            // but then that node should be registered under IndependentSprites in the scene
-            // so that its drawable game component methods will be called
-            IndependentSprites.Add(hud);
+            LoadContentAsync(p =>
+            {
+                p.Report((0, "Creating heads up display..."));
+                // a scene can be responsible for instantiating
+                // another root node, without having it be a child of the object insantiating it
+                // if it makes sense for that node to be rendered independently, such as components
+                // not rendered in the main camera view
+                var hud = new Hud(Game, SpriteBatch);
 
-            // camera is disabled by default to prevent it running during times when it should not be
-            // so we need to explicitly enable it here
-            _camera.Enabled = true;
+                p.Report((20, "Adding content to heads up display..."));
+                // we can add more content to the Hud if we want
+                static string text() => "Camera: '(,)' Rotate | '<,>,ScroolWheel' Zoom | 'W,A,S,D,Arrow Keys' Move | 'R' Reset";
+                var position = new Vector2(Game.GraphicsDevice.Viewport.Width - (logFont.MeasureString(text()).X + 10), Game.GraphicsDevice.Viewport.Height - 30);
+                hud.AddStringSprite(position, logFont, text);
 
-            // just something to look at with the camera
-            CreateBoxArray(logFont);
+                p.Report((40, "Registering heads up display..."));
+                // but then that node should be registered under IndependentSprites in the scene
+                // so that its drawable game component methods will be called
+                IndependentSprites.Add(hud);
+
+                p.Report((60, "Enabling the camera..."));
+                // camera is disabled by default to prevent it running during times when it should not be
+                // so we need to explicitly enable it here
+                _camera.Enabled = true;
+
+                p.Report((80, "Creating something to look at..."));
+                // just something to look at with the camera
+                CreateBoxArray(logFont);
+
+                p.Report((100, "Done!"));
+            });
 
             Logger?.LogTrace(scope, "{1893C918-D4F2-4BF7-A10B-E560C5AFBEA7}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
 
@@ -71,6 +83,8 @@ namespace MonoGameSandbox.Scenes.Simple2dCameraDemo
 
         public override void Update(GameTime gameTime)
         {
+            if (!LoadContentCompleted) return;
+
             _input.OnReleased(() => GameState.SetGameState<MainMenuScene>(SpriteBatch), g => g.A, Keys.E);
 
             base.Update(gameTime);

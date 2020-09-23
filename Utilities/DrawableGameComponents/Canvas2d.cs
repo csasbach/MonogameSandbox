@@ -16,10 +16,5 @@ namespace Utilities.DrawableGameComponents
         /// <param name="game"></param>
         /// <param name="spriteBatch"></param>
         protected Canvas2d(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch) { }
-
-        protected override void Draw(SpriteBatch spriteBatch)
-        {
-            // no op
-        }
     }
 }

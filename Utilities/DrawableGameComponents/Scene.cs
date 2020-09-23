@@ -1,8 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Utilities.Abstractions;
 using Utilities.Attributes;
 using Utilities.Services;
@@ -14,7 +17,7 @@ namespace Utilities.DrawableGameComponents
     /// Should be instantiated by the game or a game state manager
     /// The active scene takes control of the game state
     /// </summary>
-    public class Scene : Canvas2d
+    public abstract class Scene : Canvas2d
     {
         private string _gameTitle;
         private string _sceneName;
@@ -27,6 +30,9 @@ namespace Utilities.DrawableGameComponents
         protected Color BackgroundColor { get; set; } = Microsoft.Xna.Framework.Color.Black;
         protected IPauseService Pause { get; }
         protected List<ISprite> IndependentSprites { get; } = new List<ISprite>();
+        protected int LoadContentProgressPercent { get; set; } = -1;
+        protected string LoadContentProgressMessage { get; set; } = "Loading...";
+        protected bool LoadContentCompleted { get; set; } = true;
 
         /// <summary>
         /// Root node constructor
@@ -35,7 +41,7 @@ namespace Utilities.DrawableGameComponents
         /// </summary>
         /// <param name="game"></param>
         /// <param name="spriteBatch"></param>
-        public Scene(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
+        protected Scene(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
             using (var scope = Logger?.BeginScope($"{nameof(Scene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
             {
@@ -68,6 +74,8 @@ namespace Utilities.DrawableGameComponents
 
         public override void Update(GameTime gameTime)
         {
+            if (!LoadContentCompleted) return;
+
             foreach (var sprite in IndependentSprites)
             {
                 if (!sprite.IsInitialized) sprite.Initialize();
@@ -76,8 +84,20 @@ namespace Utilities.DrawableGameComponents
             base.Update(gameTime);
         }
 
-        protected override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
+            if (!LoadContentCompleted)
+            {
+                Draw(SpriteBatch);
+                return;
+            }
+
+            if (isUnloading)
+            {
+                GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
+                return;
+            }
+
             // not drawing when paused saves resources
             if (Pause.Paused) return;
 
@@ -85,7 +105,25 @@ namespace Utilities.DrawableGameComponents
             // this node has the responsibility of clearing the render for each frame.
             GraphicsDevice.Clear(BackgroundColor);
 
-            base.Draw(spriteBatch);
+            base.Draw(gameTime);
+        }
+
+        protected override void Draw(SpriteBatch spriteBatch)
+        {
+            if (LoadContentCompleted) return;
+
+            // draws the loading message while content is still being loaded
+
+            spriteBatch.Begin();
+
+            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
+            spriteBatch.DrawString(
+                Game.Content.Load<SpriteFont>("LogFont"),
+                $"{LoadContentProgressMessage} {LoadContentProgressPercent}% completed...",
+                new Vector2(10, 10),
+                Microsoft.Xna.Framework.Color.White);
+
+            spriteBatch.End();
         }
 
         protected override void UnloadContent()
@@ -113,6 +151,49 @@ namespace Utilities.DrawableGameComponents
 
                 Logger?.LogTrace(scope, "{29490D81-069E-41C7-B937-0ED622C2B072}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
             }
+        }
+
+        /// <summary>
+        /// Allows for content to be loaded asynchronously.
+        /// The delegate can report percent progress along with
+        /// a message
+        /// </summary>
+        /// <param name="contentLoader"></param>
+        protected async void LoadContentAsync(Action<IProgress<(int, string)>> contentLoader)
+        {
+            LoadContentCompleted = false;
+            var progress = new Progress<(int percent, string message)>(p =>
+            {
+                LoadContentProgressPercent = p.percent;
+                LoadContentProgressMessage = p.message ?? LoadContentProgressMessage;
+            });
+            try
+            {
+                await ContentLoaderAsync(progress, contentLoader).ConfigureAwait(false);
+            }
+            finally
+            {
+                LoadContentCompleted = true;
+            }
+        }
+
+        /// <summary>
+        /// Returns an async task that runs a delegate containing the
+        /// code for loading the content of this scene.
+        /// </summary>
+        /// <param name="progress"></param>
+        /// <param name="contentLoader"></param>
+        /// <returns></returns>
+        private async Task ContentLoaderAsync(IProgress<(int percent, string message)> progress, Action<IProgress<(int percent, string message)>> contentLoader)
+        {
+            await Task.Run(() =>
+            {
+                LoadContentProgressPercent = 0;
+                contentLoader(progress);
+                // gives us about a dozen frames at 100 percent completion
+                LoadContentProgressPercent = 100;
+                Thread.Sleep(240);
+            }).ConfigureAwait(false);
         }
     }
 }

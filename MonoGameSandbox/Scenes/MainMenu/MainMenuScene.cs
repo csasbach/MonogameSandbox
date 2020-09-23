@@ -36,13 +36,20 @@ namespace MonoGameSandbox.Scenes.MainMenu
             using var scope = Logger?.BeginScope($"{nameof(MainMenuScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
             Logger?.LogTrace(scope, "{C983C39D-19A8-4F37-8362-36706621536D}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
-            var titleFont = Game.Content.Load<SpriteFont>("MenuTitleFont");
-            var logFont = Game.Content.Load<SpriteFont>("LogFont");
-
-            var viewportCenter = Game.GraphicsDevice.Viewport.Bounds.GetCenter();
-
-            CreateTitle(titleFont, viewportCenter);
-            CreateButtonArray(logFont, viewportCenter);
+            LoadContentAsync(p =>
+            {
+                p.Report((0, "Loading Menu font..."));
+                var titleFont = Game.Content.Load<SpriteFont>("MenuTitleFont");
+                p.Report((20, "Loading Log font..."));
+                var logFont = Game.Content.Load<SpriteFont>("LogFont");
+                p.Report((40, "Reticulating splines..."));
+                var viewportCenter = Game.GraphicsDevice.Viewport.Bounds.GetCenter();
+                p.Report((60, "Creating title..."));
+                CreateTitle(titleFont, viewportCenter);
+                p.Report((80, "Creating scene links..."));
+                CreateButtonArray(logFont, viewportCenter);
+                p.Report((100, "Loading Complete!"));
+            });
 
             Logger?.LogTrace(scope, "{627638E6-C88C-4D3C-BE6D-6FCF02445954}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
 
@@ -53,6 +60,8 @@ namespace MonoGameSandbox.Scenes.MainMenu
 
         public override void Update(GameTime gameTime)
         {
+            if (!LoadContentCompleted) return;
+
             // effectively disabling pause for this scene
             Pause.Paused = false;
 

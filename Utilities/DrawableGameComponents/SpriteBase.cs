@@ -50,8 +50,8 @@ namespace Utilities.DrawableGameComponents
         protected SpriteBase(Game game, SpriteBatch spriteBatch) : base(game)
         {
             Game = game;
-            _spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch)); 
-            
+            _spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
+
             Logger = Game.Services.GetService<LoggerService>();
         }
 
@@ -83,7 +83,7 @@ namespace Utilities.DrawableGameComponents
             // An event is fired that calls LoadContent on components whenever they are added to a GameComponentCollection
             // therefore, I have opted to add the components here rather than in the consturctor, otherwise constructor
             // chains and hierarchy resolution order in related components can become a difficult to manage problem
-            if(!(_spriteBatch is null))
+            if (!(_spriteBatch is null))
             {
                 Game.Components.Add(this);
             }
@@ -135,7 +135,12 @@ namespace Utilities.DrawableGameComponents
         /// Override this method with the code for rendering the sprite implementation
         /// </summary>
         /// <param name="spriteBatch"></param>
-        protected abstract void Draw(SpriteBatch spriteBatch);
+        protected virtual void Draw(SpriteBatch spriteBatch)
+        {
+            // this i a no nop
+            // but any child class that renders its own content
+            // will need to call spriteBatch.Draw or spriteBatch.DrawString here
+        }
 
         public virtual void DetachFromTree(SpriteBatch spriteBatch)
         {
@@ -234,7 +239,7 @@ namespace Utilities.DrawableGameComponents
             // unload and remove all of its children
             var sweep = new ISprite[Children.Count];
             Children.CopyTo(sweep);
-            foreach(var child in sweep)
+            foreach (var child in sweep)
             {
                 Children.ElementAt(Children.IndexOf(child)).ForceUnloadContent();
                 Children.Remove(child);

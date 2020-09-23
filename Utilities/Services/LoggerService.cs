@@ -67,7 +67,7 @@ namespace Utilities.Services
         private readonly List<ILogQueue> _logQueues = new List<ILogQueue>();
         private Func<object, string> _formatter = d => d.ToString();
 
-        public LoggerService(Game game) : base(game, typeof(LoggerService)) { }        
+        public LoggerService(Game game) : base(game, typeof(LoggerService)) { }
 
         public IDisposable BeginScope<TState>(TState state)
         {
