@@ -88,7 +88,7 @@ namespace Utilities.DrawableGameComponents
         {
             if (!LoadContentCompleted)
             {
-                Draw(SpriteBatch);
+                DrawMyContent(SpriteBatch);
                 return;
             }
 
@@ -108,7 +108,7 @@ namespace Utilities.DrawableGameComponents
             base.Draw(gameTime);
         }
 
-        protected override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawMyContent(SpriteBatch spriteBatch)
         {
             if (LoadContentCompleted) return;
 

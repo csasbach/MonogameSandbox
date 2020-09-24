@@ -11,6 +11,7 @@ using Utilities.Abstractions;
 using Utilities.Attributes;
 using Utilities.DrawableGameComponents;
 using Utilities.Services;
+using Utilities.Extensions;
 
 namespace MonoGameSandbox.Scenes.SimpleSaveDemo
 {
@@ -57,7 +58,12 @@ namespace MonoGameSandbox.Scenes.SimpleSaveDemo
                 p.Report((0, "Creating heads up display..."));
                 var hud = new Hud(Game, SpriteBatch);
 
-                p.Report((50, "Registering heads up display..."));
+                p.Report((33, "Adding content to heads up display..."));
+                static string text() => "Save: 'B' Save binary file | 'J' Save json file | L' Load last saved file";
+                var position = new Vector2(Game.GraphicsDevice.Viewport.Width - (logFont.MeasureString(text()).X + 10), Game.GraphicsDevice.Viewport.Height - 30);
+                hud.AddStringSprite(position, logFont, text);
+
+                p.Report((66, "Registering heads up display..."));
                 IndependentSprites.Add(hud);
 
                 p.Report((100, "Done!"));
@@ -119,19 +125,19 @@ namespace MonoGameSandbox.Scenes.SimpleSaveDemo
             base.Update(gameTime);
         }
 
-        protected override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawMyContent(SpriteBatch spriteBatch)
         {
             if (_savedSomething)
             {
-                spriteBatch.DrawString(Game.Content.Load<SpriteFont>("LogFont"), _lastSaved, new Vector2(100, 100), Microsoft.Xna.Framework.Color.White);
+                spriteBatch.DrawString(Game.Content.Load<SpriteFont>("LogFont"), $"Last file saved was a {(_lastSavedType.Name == typeof(string).Name ? "json" : "binary")} file: {_lastSaved}", new Vector2(100, 100), Microsoft.Xna.Framework.Color.White);
             }
 
             if (_loadedSomething)
             {
-                spriteBatch.DrawString(Game.Content.Load<SpriteFont>("LogFont"), _lastLoaded, new Vector2(100, 200), Microsoft.Xna.Framework.Color.White);
+                spriteBatch.DrawString(Game.Content.Load<SpriteFont>("LogFont"), $"The content loaded from the last file saved was: {_lastLoaded}", new Vector2(100, 200), Microsoft.Xna.Framework.Color.White);
             }
 
-            base.Draw(spriteBatch);
+            base.DrawMyContent(spriteBatch);
         }
 
         protected override void UnloadContent()
@@ -140,7 +146,7 @@ namespace MonoGameSandbox.Scenes.SimpleSaveDemo
             Logger?.LogTrace(scope, "{21A434BF-8F14-481B-B0B6-C960D95A03FD}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
             var cleanUpDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "saveData");
-            Directory.Delete(cleanUpDir, true);
+            if (Directory.Exists(cleanUpDir)) Directory.Delete(cleanUpDir, true);
 
             Logger?.LogTrace(scope, "{2D424FB9-0426-4173-AD3F-3133F1724A86}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
 

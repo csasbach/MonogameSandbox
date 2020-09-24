@@ -15,8 +15,9 @@ namespace Utilities.Services
         protected DrawableComponentService(Game game, Type serviceType) : base(game)
         {
             if (!serviceType.IsInstanceOfType(this)) throw new InvalidOperationException($"This service must be an instance of {serviceType.Name}.");
-            Game.Services.AddService(serviceType, this);
-            Game.Components.Add(this);
+
+            if (Game.Services.GetService(serviceType) is null) Game.Services.AddService(serviceType, this);
+            if (!Game.Components.Contains(this)) Game.Components.Add(this);
 
             Logger = Game.Services.GetService<LoggerService>();
             using (var scope = Logger?.BeginScope($"{nameof(ServiceBase)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))

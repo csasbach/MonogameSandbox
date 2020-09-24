@@ -85,7 +85,7 @@ namespace Utilities.DrawableGameComponents
             // chains and hierarchy resolution order in related components can become a difficult to manage problem
             if (!(_spriteBatch is null))
             {
-                Game.Components.Add(this);
+                if (!Game.Components.Contains(this)) Game.Components.Add(this);
             }
 
             base.LoadContent();
@@ -119,7 +119,7 @@ namespace Utilities.DrawableGameComponents
                     Transformer?.Transform ?? Matrix.Identity);
             }
 
-            Draw(SpriteBatch);
+            DrawMyContent(SpriteBatch);
 
             foreach (var child in Children) child.Draw(gameTime);
 
@@ -135,7 +135,7 @@ namespace Utilities.DrawableGameComponents
         /// Override this method with the code for rendering the sprite implementation
         /// </summary>
         /// <param name="spriteBatch"></param>
-        protected virtual void Draw(SpriteBatch spriteBatch)
+        protected virtual void DrawMyContent(SpriteBatch spriteBatch)
         {
             // this i a no nop
             // but any child class that renders its own content
@@ -155,7 +155,7 @@ namespace Utilities.DrawableGameComponents
                 Parent = null;
                 _spriteBatch = spriteBatch;
                 // when this node becomes a root node it must be added to the game components list so that it will be included in the game loop
-                Game.Components.Add(this);
+                if (!Game.Components.Contains(this)) Game.Components.Add(this);
 
                 Logger?.LogTrace(scope, "{C9F06B17-3D3C-4E56-BC10-34A51FE530DB}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
             }

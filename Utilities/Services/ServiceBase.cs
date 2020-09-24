@@ -17,7 +17,8 @@ namespace Utilities.Services
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
             if (!serviceType.IsInstanceOfType(this)) throw new InvalidOperationException($"This service must be an instance of {serviceType.Name}.");
-            Game.Services.AddService(serviceType, this);
+
+            if (Game.Services.GetService(serviceType) is null) Game.Services.AddService(serviceType, this);
 
             Logger = Game.Services.GetService<LoggerService>();
             using (var scope = Logger?.BeginScope($"{nameof(ServiceBase)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))

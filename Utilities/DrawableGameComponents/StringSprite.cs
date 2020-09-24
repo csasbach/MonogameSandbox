@@ -33,7 +33,7 @@ namespace Utilities.DrawableGameComponents
             if (parent is null) throw new ArgumentNullException(nameof(parent));
         }
 
-        protected override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawMyContent(SpriteBatch spriteBatch)
         {
             if (SpriteFont is null) return;
 

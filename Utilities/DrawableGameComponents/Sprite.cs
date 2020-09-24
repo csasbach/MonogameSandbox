@@ -28,7 +28,7 @@ namespace Utilities.DrawableGameComponents
         /// <param name="parent"></param>
         public Sprite(ISprite parent) : base(parent) { }
 
-        protected override void Draw(SpriteBatch spriteBatch)
+        protected override void DrawMyContent(SpriteBatch spriteBatch)
         {
             if (Texture is null) return;
 
