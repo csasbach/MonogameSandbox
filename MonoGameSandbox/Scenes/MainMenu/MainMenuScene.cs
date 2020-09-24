@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameSandbox.Scenes.Simple2dCameraDemo;
+using MonoGameSandbox.Scenes.SimpleSaveDemo;
 using MonoGameSandbox.Scenes.SomeOtherDemo;
 using System;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace MonoGameSandbox.Scenes.MainMenu
             Logger?.LogTrace(scope, "{98F8AC0D-7455-4E71-BE1D-111263933ADC}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
             _sceneLinks[typeof(Simple2dCameraDemoScene)] = null;
-            _sceneLinks[typeof(Demo01)] = null;
+            _sceneLinks[typeof(SimpleSaveDemoScene)] = null;
             _sceneLinks[typeof(Demo02)] = null;
             _sceneLinks[typeof(Demo03)] = null;
             _sceneLinks[typeof(Demo04)] = null;

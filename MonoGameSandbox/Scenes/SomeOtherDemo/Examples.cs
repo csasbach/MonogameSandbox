@@ -12,6 +12,7 @@ namespace MonoGameSandbox.Scenes.SomeOtherDemo
     public abstract class SceneExampleBase : Scene
     {
         private readonly IInputService _input;
+
         protected SceneExampleBase(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
             _input = Game.Services.GetService<IInputService>();
