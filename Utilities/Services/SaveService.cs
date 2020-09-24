@@ -1,18 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.IO;
-using System.Runtime.Serialization;
 using Utilities.Abstractions;
 
 namespace Utilities.Services
 {
-    public class SaveService<TSerializable, TSerialized> : ServiceBase, ISaveService<TSerializable>
+    public class SaveService<TSerializable, TSerialized> : ServiceBase, ISaveService<TSerializable, TSerialized>
     {
         private readonly ISerializer<TSerialized> _serializer;
 
         public string SaveDirectory { get; set; }
 
-        public SaveService(Game game, ISerializer<TSerialized> serializer) : base(game, typeof(ISaveService))
+        public SaveService(Game game, ISerializer<TSerialized> serializer) : base(game, typeof(ISaveService<TSerializable, TSerialized>))
         {
             _serializer = serializer;
         }

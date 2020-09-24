@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Utilities.Abstractions;
 
 namespace MonoGameSandbox.Serializers
 {
+    /// <summary>
+    /// Used to create human readable data files.
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
     public class JsonTextSerializer<TData> : ITextSerializer<TData>
     {
         public Type SerializedDataType => typeof(string);

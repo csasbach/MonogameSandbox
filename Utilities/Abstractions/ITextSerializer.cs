@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace Utilities.Abstractions
 {
@@ -17,7 +14,7 @@ namespace Utilities.Abstractions
         TSerializable Deserialize(byte[] serialized);
     }
 
-    public interface ISerializer<TSerialized> 
+    public interface ISerializer<TSerialized>
     {
         /// <summary>
         /// should return typeof(TSerialized)
