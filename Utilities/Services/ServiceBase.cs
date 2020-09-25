@@ -10,6 +10,8 @@ namespace Utilities.Services
     /// </summary>
     public abstract class ServiceBase
     {
+        private readonly Type _serviceType;
+
         protected LoggerService Logger { get; }
         protected Game Game { get; }
 
@@ -17,12 +19,21 @@ namespace Utilities.Services
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
             if (!serviceType.IsInstanceOfType(this)) throw new InvalidOperationException($"This service must be an instance of {serviceType.Name}.");
+            _serviceType = serviceType;
 
-            if (Game.Services.GetService(serviceType) is null) Game.Services.AddService(serviceType, this);
+            // idempotent add
+            if (Game.Services.GetService(_serviceType) is null) Game.Services.AddService(_serviceType, this);
 
             Logger = Game.Services.GetService<LoggerService>();
             using (var scope = Logger?.BeginScope($"{nameof(ServiceBase)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
                 Logger?.LogTrace(scope, "{1A89352F-B366-4107-936B-B232E4709752}", $"Finished[{Stopwatch.GetTimestamp()}]", null);
+        }
+
+        ~ServiceBase()
+        {
+            // idempotent remove
+            if (!(Game.Services.GetService(_serviceType) is null)) Game.Services.RemoveService(_serviceType);
+
         }
     }
 }

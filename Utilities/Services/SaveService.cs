@@ -5,34 +5,27 @@ using Utilities.Abstractions;
 
 namespace Utilities.Services
 {
-    public class SaveService<TSerializable, TSerialized> : ServiceBase, ISaveService<TSerializable, TSerialized>
+    public class SaveService<TSerializable, TSerializer> : ServiceBase, ISaveService<TSerializable, TSerializer> where TSerializer : ISerializer
     {
-        private readonly ISerializer<TSerialized> _serializer;
+        private readonly ISerializer _serializer;
 
         public string SaveDirectory { get; set; }
 
-        public SaveService(Game game, ISerializer<TSerialized> serializer) : base(game, typeof(ISaveService<TSerializable, TSerialized>))
+        public SaveService(Game game) : base(game, typeof(ISaveService<TSerializable, TSerializer>))
         {
-            _serializer = serializer;
+            _serializer = Activator.CreateInstance<TSerializer>();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public bool TrySaveData(string path, TSerializable saveData)
         {
-            using (var scope = Logger.BeginScope($"{nameof(SaveService<TSerializable, TSerialized>)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            using (var scope = Logger.BeginScope($"{nameof(SaveService<TSerializable, TSerializer>)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
             {
                 try
                 {
                     var fullPath = Path.Combine(SaveDirectory, path);
                     Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
-                    if (_serializer.SerializedDataType == typeof(string))
-                    {
-                        File.WriteAllText(fullPath, ((ITextSerializer<TSerializable>)_serializer).Serialize(saveData));
-                    }
-                    if (_serializer.SerializedDataType == typeof(byte[]))
-                    {
-                        File.WriteAllBytes(fullPath, ((IBinarySerializer<TSerializable>)_serializer).Serialize(saveData));
-                    }
+                    File.WriteAllBytes(fullPath, _serializer.Serialize(saveData));
                     return true;
                 }
                 catch (Exception e)
@@ -46,22 +39,14 @@ namespace Utilities.Services
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public bool TryLoadData(string path, out TSerializable loadData)
         {
-            using (var scope = Logger.BeginScope($"{nameof(SaveService<TSerializable, TSerialized>)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
+            using (var scope = Logger.BeginScope($"{nameof(SaveService<TSerializable, TSerializer>)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
             {
                 loadData = default;
                 try
                 {
                     var fullPath = Path.Combine(SaveDirectory, path);
-                    if (_serializer.SerializedDataType == typeof(string))
-                    {
-                        loadData = ((ITextSerializer<TSerializable>)_serializer).Deserialize(File.ReadAllText(fullPath));
-                        return true;
-                    }
-                    if (_serializer.SerializedDataType == typeof(byte[]))
-                    {
-                        loadData = ((IBinarySerializer<TSerializable>)_serializer).Deserialize(File.ReadAllBytes(fullPath));
-                        return true;
-                    }
+                    loadData = _serializer.Deserialize<TSerializable>(File.ReadAllBytes(fullPath));
+                    return true;
                 }
                 catch (Exception e)
                 {

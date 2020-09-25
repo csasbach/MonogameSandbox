@@ -8,12 +8,11 @@ namespace MonoGameSandbox.Serializers
     /// <summary>
     /// Used to obfuscate data files so that they are not human readable.
     /// </summary>
-    /// <typeparam name="TData"></typeparam>
-    public class JsonBinarySerializer<TData> : IBinarySerializer<TData>
+    public class JsonBinarySerializer : ISerializer
     {
         public Type SerializedDataType => typeof(byte[]);
 
-        public TData Deserialize(byte[] serialized)
+        public TData Deserialize<TData>(byte[] serialized)
         {
             for (int i = 0; i < serialized.Length; i++)
             {
@@ -23,7 +22,7 @@ namespace MonoGameSandbox.Serializers
             return JsonSerializer.Deserialize<TData>(json);
         }
 
-        public byte[] Serialize(TData serializable)
+        public byte[] Serialize<TData>(TData serializable)
         {
             var json = JsonSerializer.Serialize(serializable);
             var bytes = Encoding.UTF8.GetBytes(json);

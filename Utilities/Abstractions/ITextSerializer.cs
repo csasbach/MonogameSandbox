@@ -2,23 +2,9 @@
 
 namespace Utilities.Abstractions
 {
-    public interface ITextSerializer<TSerializable> : ISerializer<string>
+    public interface ISerializer
     {
-        string Serialize(TSerializable serializable);
-        TSerializable Deserialize(string serialized);
-    }
-
-    public interface IBinarySerializer<TSerializable> : ISerializer<byte[]>
-    {
-        byte[] Serialize(TSerializable serializable);
-        TSerializable Deserialize(byte[] serialized);
-    }
-
-    public interface ISerializer<TSerialized>
-    {
-        /// <summary>
-        /// should return typeof(TSerialized)
-        /// </summary>
-        Type SerializedDataType { get; }
+        byte[] Serialize<T>(T data);
+        T Deserialize<T>(byte[] bytes);
     }
 }

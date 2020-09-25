@@ -24,8 +24,8 @@ namespace MonoGameSandbox.Scenes.SimpleSaveDemo
         }
 
         private readonly IInputService _input;
-        private readonly ISaveService<SaveData, string> _textSaveService;
-        private readonly ISaveService<SaveData, byte[]> _binarySaveService;
+        private readonly ISaveService<SaveData, JsonTextSerializer> _textSaveService;
+        private readonly ISaveService<SaveData, JsonBinarySerializer> _binarySaveService;
 
         public SimpleSaveDemoScene(Game game, SpriteBatch spriteBatch)
             : base(game, spriteBatch)
@@ -34,11 +34,11 @@ namespace MonoGameSandbox.Scenes.SimpleSaveDemo
             Logger?.LogTrace(scope, "{28ABC73C-5A83-4D0F-9B3F-BF4D3EEDEF2B}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
             _input = Game.Services.GetService<IInputService>();
-            _textSaveService = new SaveService<SaveData, string>(game, new JsonTextSerializer<SaveData>())
+            _textSaveService = new SaveService<SaveData, JsonTextSerializer>(game)
             {
                 SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
             };
-            _binarySaveService = new SaveService<SaveData, byte[]>(game, new JsonBinarySerializer<SaveData>())
+            _binarySaveService = new SaveService<SaveData, JsonBinarySerializer>(game)
             {
                 SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
             };

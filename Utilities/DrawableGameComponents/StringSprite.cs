@@ -28,10 +28,7 @@ namespace Utilities.DrawableGameComponents
         /// Child node constructor
         /// </summary>
         /// <param name="parent"></param>
-        public StringSprite(ISprite parent) : base(parent)
-        {
-            if (parent is null) throw new ArgumentNullException(nameof(parent));
-        }
+        public StringSprite(ISprite parent) : base(parent) { }
 
         protected override void DrawMyContent(SpriteBatch spriteBatch)
         {

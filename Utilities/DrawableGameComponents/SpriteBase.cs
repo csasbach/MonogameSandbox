@@ -137,7 +137,7 @@ namespace Utilities.DrawableGameComponents
         /// <param name="spriteBatch"></param>
         protected virtual void DrawMyContent(SpriteBatch spriteBatch)
         {
-            // this i a no nop
+            // here this is a no nop
             // but any child class that renders its own content
             // will need to call spriteBatch.Draw or spriteBatch.DrawString here
         }
