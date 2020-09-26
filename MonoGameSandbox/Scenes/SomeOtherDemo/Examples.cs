@@ -96,4 +96,36 @@ namespace MonoGameSandbox.Scenes.SomeOtherDemo
         {
         }
     }
+
+    [Scene("Demo 09")]
+    public class Demo09 : SceneExampleBase
+    {
+        public Demo09(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
+        {
+        }
+    }
+
+    [Scene("Demo 12")]
+    public class Demo10 : SceneExampleBase
+    {
+        public Demo10(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
+        {
+        }
+    }
+
+    [Scene("Demo 11")]
+    public class Demo11 : SceneExampleBase
+    {
+        public Demo11(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
+        {
+        }
+    }
+
+    [Scene("Demo 12")]
+    public class Demo12 : SceneExampleBase
+    {
+        public Demo12(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
+        {
+        }
+    }
 }

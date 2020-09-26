@@ -81,13 +81,16 @@ namespace MonoGameSandbox.Scenes.MainMenu
 
             _sceneLinks[typeof(Simple2dCameraDemoScene)] = null;
             _sceneLinks[typeof(SimpleSaveDemoScene)] = null;
-            _sceneLinks[typeof(Demo02)] = null;
             _sceneLinks[typeof(Demo03)] = null;
             _sceneLinks[typeof(Demo04)] = null;
             _sceneLinks[typeof(Demo05)] = null;
             _sceneLinks[typeof(Demo06)] = null;
             _sceneLinks[typeof(Demo07)] = null;
             _sceneLinks[typeof(Demo08)] = null;
+            _sceneLinks[typeof(Demo09)] = null;
+            _sceneLinks[typeof(Demo10)] = null;
+            _sceneLinks[typeof(Demo11)] = null;
+            _sceneLinks[typeof(Demo12)] = null;
 
             Logger?.LogTrace(scope, "{647D63CB-4FCA-4BC3-8F0E-74888BFE5FA4}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
