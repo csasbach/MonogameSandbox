@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
-using System.Dynamic;
 using Utilities.Abstractions;
 using Utilities.Extensions;
 using Utilities.Models;
@@ -18,7 +17,7 @@ namespace Utilities.GameComponents
         private readonly IInputService _input;
 
         public bool MoveEnabled { get; set; } = true;
-        public Vector2 Position 
+        public Vector2 Position
         {
             get => _camera.Position;
             set => _camera.Position = MoveEnabled ? value : Position;
@@ -33,7 +32,7 @@ namespace Utilities.GameComponents
         public float Zoom
         {
             get => _camera.Zoom;
-            set => _camera.Zoom = ZoomEnabled ?  value : Zoom;
+            set => _camera.Zoom = ZoomEnabled ? value : Zoom;
         }
         public bool ResetEnabled { get; set; } = true;
         public Matrix Transform => _camera.Transform;
