@@ -63,54 +63,88 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
                     "tileGuides/leftWedge",
                     "tileGuides/rightWedge",
                     "tileGuides/box"
-                );
-                _isoTileMap.TileSize = 314;
-                _isoTileMap.TileArrayWidth = 3;
-                _isoTileMap.TileArrayHeight = 3;
-                _isoTileMap.TileArrayLayers = 3;
+                )
+                {
+                    TileSize = 314,
+                    TileArrayWidth = 32,
+                    TileArrayHeight = 32,
+                    TileArrayLayers = 16
+                };
+
+                for (var x = _isoTileMap.TileArrayWidth; x >= 0; x--)
+                {
+                    for (var y = _isoTileMap.TileArrayHeight; y >= 0; y--)
+                    {
+                        _isoTileMap.MapTextures("tileGuides/box", new Vector3(x, y, 0));
+                    }
+                }
                 _isoTileMap.MapTextures("tileGuides/box"
-                    , new Vector3(0, 0, 0)
-                    , new Vector3(1, 0, 0)
-                    , new Vector3(2, 0, 0)
+                    //, new Vector3(0, 0, 0)
+                    //, new Vector3(1, 0, 0)
+                    //, new Vector3(2, 0, 0)
 
-                    , new Vector3(0, 1, 0)
-                    , new Vector3(1, 1, 0)
-                    , new Vector3(2, 1, 0)
+                    //, new Vector3(0, 1, 0)
+                    //, new Vector3(1, 1, 0)
+                    //, new Vector3(2, 1, 0)
 
-                    , new Vector3(0, 2, 0)
-                    , new Vector3(1, 2, 0)
-                    , new Vector3(2, 2, 0)
-
-
-
-                    , new Vector3(0, 0, 1)
-                    , new Vector3(1, 0, 1)
-                    , new Vector3(2, 0, 1)
-
-                    , new Vector3(0, 1, 1)
-                    , new Vector3(1, 1, 1)
-                    , new Vector3(2, 1, 1)
-
-                    , new Vector3(0, 2, 1)
-                    , new Vector3(1, 2, 1)
-                    , new Vector3(2, 2, 1)
+                    //, new Vector3(0, 2, 0)
+                    //, new Vector3(1, 2, 0)
+                    //, new Vector3(2, 2, 0)
 
 
 
-                    , new Vector3(0, 0, 2)
-                    , new Vector3(1, 0, 2)
-                    , new Vector3(2, 0, 2)
+                    , new Vector3(15, 15, 1)
+                    , new Vector3(16, 15, 1)
+                    , new Vector3(17, 15, 1)
 
-                    , new Vector3(0, 1, 2)
-                    , new Vector3(1, 1, 2)
-                    , new Vector3(2, 1, 2)
+                    , new Vector3(15, 16, 1)
+                    , new Vector3(16, 16, 1)
+                    , new Vector3(17, 16, 1)
 
-                    , new Vector3(0, 2, 2)
-                    , new Vector3(1, 2, 2)
-                    , new Vector3(2, 2, 2)
+                    , new Vector3(15, 17, 1)
+                    , new Vector3(16, 17, 1)
+                    , new Vector3(17, 17, 1)
+
+
+
+                    //, new Vector3(15, 15, 2)
+                    //, new Vector3(16, 15, 2)
+                    //, new Vector3(17, 15, 2)
+
+                    //, new Vector3(15, 16, 2)
+                    , new Vector3(16, 16, 2)
+                    , new Vector3(17, 16, 2)
+
+                    //, new Vector3(15, 17, 2)
+                    , new Vector3(16, 17, 2)
+                    , new Vector3(17, 17, 2)
+
+
+
+                    //, new Vector3(15, 15, 3)
+                    //, new Vector3(16, 15, 3)
+                    //, new Vector3(17, 15, 3)
+                                          
+                    //, new Vector3(15, 16, 3)
+                    //, new Vector3(16, 16, 3)
+                    //, new Vector3(17, 16, 3)
+                                          
+                    //, new Vector3(15, 17, 3)
+                    //, new Vector3(16, 17, 3)
+                    , new Vector3(17, 17, 3)
+                );
+
+                _isoTileMap.MapTextures("tileGuides/leftWedge",
+                    new Vector3(15, 18, 1)
+                );
+
+                _isoTileMap.MapTextures("tileGuides/rightWedge",
+                    new Vector3(18, 15, 1)
                 );
 
                 _camera.Enabled = true;
+                _camera.Position = new Vector2(5310, 4475);
+                _camera.Zoom = 0.6666f;
 
                 p.Report((100, "Done!"));
             });

@@ -163,8 +163,10 @@ namespace MonoGameSandbox.Scenes.TexturePackerDemo
             var y2x3Offset = (TileSize * arrayPosition.X * (45f / 157f)) + (arrayPosition.X % 2 * (45f / 157f));
             // tiles alternate from being 1r below and 2r below the previous
             var y2y3Offset = (TileSize * arrayPosition.Y * (45f / 157f)) + (arrayPosition.Y % 2 * (45f / 157f));
-            // starting from the bottom tiles are 2r above the previous
-            var y2z3Offset = (TileSize * TileArrayLayers * 2 * (45f / 157f)) - (TileSize * arrayPosition.Z * 2 * (45f / 157f));
+            // starting from the bottom, tiles are 2r above the previous
+            var y2z3Offset = (TileSize * (TileArrayLayers - 1) * (45f / 157f)) - (TileSize * arrayPosition.Z * 2 * (45f / 157f));
+            // create a small diff to disambiguate when tiles on a different z layer are infront of other identical tiles
+            y2z3Offset += (arrayPosition.Z * 4);
             var y2 = y2x3Offset + y2y3Offset + y2z3Offset;
 
             var position = new Vector2(x2, y2);

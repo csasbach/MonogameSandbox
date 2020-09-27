@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
+using System.Dynamic;
 using Utilities.Abstractions;
 using Utilities.Extensions;
 using Utilities.Models;
@@ -16,9 +17,25 @@ namespace Utilities.GameComponents
         private Camera2d _camera;
         private readonly IInputService _input;
 
-        public Vector2 Position => _camera.Position;
-        public float Rotation => _camera.Rotation;
-        public float Zoom => _camera.Zoom;
+        public bool MoveEnabled { get; set; } = true;
+        public Vector2 Position 
+        {
+            get => _camera.Position;
+            set => _camera.Position = MoveEnabled ? value : Position;
+        }
+        public bool RotationEnabled { get; set; } = true;
+        public float Rotation
+        {
+            get => _camera.Rotation;
+            set => _camera.Rotation = RotationEnabled ? value : Rotation;
+        }
+        public bool ZoomEnabled { get; set; } = true;
+        public float Zoom
+        {
+            get => _camera.Zoom;
+            set => _camera.Zoom = ZoomEnabled ?  value : Zoom;
+        }
+        public bool ResetEnabled { get; set; } = true;
         public Matrix Transform => _camera.Transform;
 
         public Camera2dController(Game game, GraphicsDeviceManager graphicsDeviceManager, IInputService inputService) : base(game, typeof(ICameraService))
@@ -50,6 +67,11 @@ namespace Utilities.GameComponents
             }
         }
 
+        public void Reset()
+        {
+            if (ResetEnabled) _camera.Reset();
+        }
+
         public override void Initialize()
         {
             using (var scope = Logger?.BeginScope($"{nameof(Camera2dController)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
@@ -59,6 +81,8 @@ namespace Utilities.GameComponents
                 _camera = _cameraOptions is null ?
                     new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport) :
                     new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport, _cameraOptions);
+                RotationEnabled = false;
+                ResetEnabled = false;
 
                 Logger?.LogTrace(scope, "{83579F22-0071-4A58-B544-5C7AF36E61F1}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
 
@@ -72,9 +96,9 @@ namespace Utilities.GameComponents
         {
             float deltaT = gameTime.DeltaT();
 
-            HandleReset();
-            HandleRotation(deltaT);
-            HandleZoom(deltaT);
+            if (ResetEnabled) HandleReset();
+            if (RotationEnabled) HandleRotation(deltaT);
+            if (ZoomEnabled) HandleZoom(deltaT);
             HandleMovement(deltaT);
 
             base.Update(gameTime);

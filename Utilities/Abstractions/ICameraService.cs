@@ -8,8 +8,13 @@ namespace Utilities.Abstractions
     public interface ICameraService : ITransformer
     {
         bool Enabled { get; set; }
-        Vector2 Position { get; }
-        float Rotation { get; }
-        float Zoom { get; }
+        bool MoveEnabled { get; set; }
+        Vector2 Position { get; set; }
+        bool RotationEnabled { get; set; }
+        float Rotation { get; set; }
+        bool ZoomEnabled { get; set; }
+        float Zoom { get; set; }
+        bool ResetEnabled { get; set; }
+        void Reset();
     }
 }
