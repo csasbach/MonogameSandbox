@@ -26,6 +26,9 @@ namespace MonoGameSandbox.Scenes.TexturePackerDemo
         /// </summary>
         private readonly Dictionary<Vector3, Sprite> _tileArray = new Dictionary<Vector3, Sprite>();
 
+        private RenderTarget2D _tileMapBuffer;
+        private Sprite _bakedTileMap;
+
         /// <summary>
         /// The width of one isometric tile
         /// </summary>
@@ -95,6 +98,12 @@ namespace MonoGameSandbox.Scenes.TexturePackerDemo
             {
                 _texturePaths.Add(path);
             }
+            _tileMapBuffer = new RenderTarget2D(GraphicsDevice, 
+                12000, 
+                12000, 
+                true, 
+                GraphicsDevice.PresentationParameters.BackBufferFormat, 
+                DepthFormat.Depth24);
         }
 
         protected override void LoadContent()
@@ -129,12 +138,9 @@ namespace MonoGameSandbox.Scenes.TexturePackerDemo
         {
             if (ArrayInvalidated) UpdateArray();
 
-            // recalculate draw parameters
-            foreach (var kvp in _tileArray)
-            {
-                kvp.Value.Position = CalculateDrawPosition(kvp.Key);
-                kvp.Value.LayerDepth = CalculateDrawLayerDepth(kvp.Key);
-            }
+            if (ArrayInvalidated) PreRenderArray(gameTime);
+
+            ArrayInvalidated = false;
 
             base.Update(gameTime);
         }
@@ -181,7 +187,7 @@ namespace MonoGameSandbox.Scenes.TexturePackerDemo
         private void UpdateArray()
         {
             // unload all the sprites
-            Children.ForEach(c => c.ForceUnloadContent());
+            Children.Clear();
 
             // reload the sprites to populate the configured dimensions of the tile array
             // only populate sprites for positions to which a texture has been mapped
@@ -200,7 +206,12 @@ namespace MonoGameSandbox.Scenes.TexturePackerDemo
                 }
             }
 
-            ArrayInvalidated = false;
+            // recalculate draw parameters
+            foreach (var kvp in _tileArray)
+            {
+                kvp.Value.Position = CalculateDrawPosition(kvp.Key);
+                kvp.Value.LayerDepth = CalculateDrawLayerDepth(kvp.Key);
+            }
         }
 
         /// <summary>
@@ -259,6 +270,28 @@ namespace MonoGameSandbox.Scenes.TexturePackerDemo
             var layerDepth = 0.01f - xLayerDepth - yLayerDepth - zLayerDepth;
 
             return layerDepth;
+        }
+
+        /// <summary>
+        /// Bakes all the tile sprites into a single tile map sprite
+        /// for maximum draw efficiency
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void PreRenderArray(GameTime gameTime)
+        {
+            GraphicsDevice.SetRenderTarget(_tileMapBuffer);
+            SpriteBatch.Begin();
+            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
+            Children.ForEach(c => c.Draw(gameTime));
+            SpriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+            _bakedTileMap = new Sprite(this)
+            {
+                Texture = _tileMapBuffer
+            };
+
+            Children.Clear();
+            Children.Add(_bakedTileMap);
         }
     }
 }

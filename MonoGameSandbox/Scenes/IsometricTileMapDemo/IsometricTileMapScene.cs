@@ -110,8 +110,10 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
                                 "tileGuides/leftCorner",
                                 "tileGuides/rightCorner",
                                 "tileGuides/leftWedge",
+                                "tileGuides/charIncline",
                                 "tileGuides/rightWedge",
-                                "tileGuides/box"
+                                "tileGuides/box",
+                                "tileGuides/charFlat"
                             )
             {
                 TileWidth = 314,
@@ -184,6 +186,42 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
 
             _isoTileMap.MapTextures("tileGuides/rightBackWedge",
                 new Vector3(17, 14, 1)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charFlat"
+                , new Vector3(17, 17, 4)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charFlat"
+                , new Vector3(16, 17, 3)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charFlat",
+                new Vector3(16, 18, 1)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charIncline"
+                , new Vector3(15, 18, 2)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charIncline",
+                new Vector3(14, 18, 2)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charIncline",
+                new Vector3(14, 17, 2)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charIncline",
+                new Vector3(18, 15, 2)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charIncline",
+                new Vector3(18, 14, 2)
+            );
+
+            _isoTileMap.MapTextures("tileGuides/charIncline",
+                new Vector3(17, 14, 2)
             );
         }
     }
