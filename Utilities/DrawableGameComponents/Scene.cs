@@ -1,11 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Utilities.Abstractions;
 using Utilities.Attributes;
 using Utilities.Services;
@@ -30,9 +27,6 @@ namespace Utilities.DrawableGameComponents
         protected Color BackgroundColor { get; set; } = Microsoft.Xna.Framework.Color.Black;
         protected IPauseService Pause { get; }
         protected List<ISprite> IndependentSprites { get; } = new List<ISprite>();
-        protected int LoadContentProgressPercent { get; set; } = -1;
-        protected string LoadContentProgressMessage { get; set; } = "Loading...";
-        protected bool LoadContentCompleted { get; set; } = true;
 
         /// <summary>
         /// Root node constructor
@@ -151,49 +145,6 @@ namespace Utilities.DrawableGameComponents
 
                 Logger?.LogTrace(scope, "{29490D81-069E-41C7-B937-0ED622C2B072}", $"Finished Base [{Stopwatch.GetTimestamp()}]", null);
             }
-        }
-
-        /// <summary>
-        /// Allows for content to be loaded asynchronously.
-        /// The delegate can report percent progress along with
-        /// a message
-        /// </summary>
-        /// <param name="contentLoader"></param>
-        protected async void LoadContentAsync(Action<IProgress<(int, string)>> contentLoader)
-        {
-            LoadContentCompleted = false;
-            var progress = new Progress<(int percent, string message)>(p =>
-            {
-                LoadContentProgressPercent = p.percent;
-                LoadContentProgressMessage = p.message ?? LoadContentProgressMessage;
-            });
-            try
-            {
-                await ContentLoaderAsync(progress, contentLoader).ConfigureAwait(false);
-            }
-            finally
-            {
-                LoadContentCompleted = true;
-            }
-        }
-
-        /// <summary>
-        /// Returns an async task that runs a delegate containing the
-        /// code for loading the content of this scene.
-        /// </summary>
-        /// <param name="progress"></param>
-        /// <param name="contentLoader"></param>
-        /// <returns></returns>
-        private async Task ContentLoaderAsync(IProgress<(int percent, string message)> progress, Action<IProgress<(int percent, string message)>> contentLoader)
-        {
-            await Task.Run(() =>
-            {
-                LoadContentProgressPercent = 0;
-                contentLoader(progress);
-                // gives us about a dozen frames at 100 percent completion
-                LoadContentProgressPercent = 100;
-                Thread.Sleep(240);
-            }).ConfigureAwait(false);
         }
     }
 }

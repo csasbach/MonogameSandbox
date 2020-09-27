@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameSandbox.Scenes.IsometricTileMapDemo;
 using MonoGameSandbox.Scenes.Simple2dCameraDemo;
 using MonoGameSandbox.Scenes.SimpleSaveDemo;
 using MonoGameSandbox.Scenes.SomeOtherDemo;
@@ -81,7 +82,7 @@ namespace MonoGameSandbox.Scenes.MainMenu
 
             _sceneLinks[typeof(Simple2dCameraDemoScene)] = null;
             _sceneLinks[typeof(SimpleSaveDemoScene)] = null;
-            _sceneLinks[typeof(Demo03)] = null;
+            _sceneLinks[typeof(IsometricTileMapScene)] = null;
             _sceneLinks[typeof(Demo04)] = null;
             _sceneLinks[typeof(Demo05)] = null;
             _sceneLinks[typeof(Demo06)] = null;

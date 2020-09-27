@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Utilities.Abstractions;
 using Utilities.Services;
 
@@ -39,6 +41,9 @@ namespace Utilities.DrawableGameComponents
         /// </summary>
         protected ITransformer Transformer { get; set; }
         protected LoggerService Logger { get; }
+        public int LoadContentProgressPercent { get; protected set; } = -1;
+        public string LoadContentProgressMessage { get; protected set; } = "Loading...";
+        public bool LoadContentCompleted { get; protected set; } = true;
 
         /// <summary>
         /// Root node constructor
@@ -91,11 +96,63 @@ namespace Utilities.DrawableGameComponents
             base.LoadContent();
         }
 
+        /// <summary>
+        /// Allows for content to be loaded asynchronously.
+        /// The delegate can report percent progress along with
+        /// a message
+        /// </summary>
+        /// <param name="contentLoader"></param>
+        public async void LoadContentAsync(Action<IProgress<(int, string)>> contentLoader)
+        {
+            LoadContentCompleted = false;
+            var progress = new Progress<(int percent, string message)>(p =>
+            {
+                LoadContentProgressPercent = p.percent;
+                LoadContentProgressMessage = p.message ?? LoadContentProgressMessage;
+            });
+            try
+            {
+                await ContentLoaderAsync(progress, contentLoader).ConfigureAwait(false);
+            }
+            finally
+            {
+                LoadContentCompleted = true;
+            }
+        }
+
+        /// <summary>
+        /// Returns an async task that runs a delegate containing the
+        /// code for loading the content of this scene.
+        /// </summary>
+        /// <param name="progress"></param>
+        /// <param name="contentLoader"></param>
+        /// <returns></returns>
+        private async Task ContentLoaderAsync(IProgress<(int percent, string message)> progress, Action<IProgress<(int percent, string message)>> contentLoader)
+        {
+            await Task.Run(() =>
+            {
+                LoadContentProgressPercent = 0;
+                contentLoader(progress);
+                // gives us about a dozen frames at 100 percent completion
+                LoadContentProgressPercent = 100;
+                Thread.Sleep(240);
+            }).ConfigureAwait(false);
+        }
+
         public override void Update(GameTime gameTime)
         {
+            if (!LoadContentCompleted) return;
+
             foreach (var child in Children)
             {
-                child.Update(gameTime);
+                if (!child.IsInitialized)
+                {
+                    child.Initialize();
+                }
+                else
+                {
+                    child.Update(gameTime);
+                }
             }
 
             base.Update(gameTime);
@@ -107,6 +164,12 @@ namespace Utilities.DrawableGameComponents
         /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
+            if (!LoadContentCompleted)
+            {
+                DrawMyContent(SpriteBatch);
+                return;
+            }
+
             // Begin and End are only called from the root node where the spritebatch is set
             if (!(_spriteBatch is null))
             {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Utilities.Abstractions
+﻿namespace Utilities.Abstractions
 {
     public interface ISerializer
     {
