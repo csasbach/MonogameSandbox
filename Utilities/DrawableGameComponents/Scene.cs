@@ -82,7 +82,8 @@ namespace Utilities.DrawableGameComponents
         {
             if (!LoadContentCompleted)
             {
-                DrawMyContent(SpriteBatch);
+                // do an independent draw for loading display behavior
+                DrawMyContent(SpriteBatch, true);
                 return;
             }
 
@@ -102,8 +103,9 @@ namespace Utilities.DrawableGameComponents
             base.Draw(gameTime);
         }
 
-        protected override void DrawMyContent(SpriteBatch spriteBatch)
+        protected override void DrawMyContent(SpriteBatch spriteBatch, bool drawIndependently)
         {
+            if (!drawIndependently) return;
             if (LoadContentCompleted) return;
 
             // draws the loading message while content is still being loaded

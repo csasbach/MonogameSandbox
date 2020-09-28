@@ -29,6 +29,16 @@ namespace Utilities.GameComponents
             set => _camera.Rotation = RotationEnabled ? value : Rotation;
         }
         public bool ZoomEnabled { get; set; } = true;
+        public float MaxZoom
+        {
+            get => _camera.MaxZoom;
+            set => _camera.MaxZoom = value;
+        }
+        public float MinZoom
+        {
+            get => _camera.MinZoom;
+            set => _camera.MinZoom = value;
+        }
         public float Zoom
         {
             get => _camera.Zoom;
@@ -71,6 +81,18 @@ namespace Utilities.GameComponents
             if (ResetEnabled) _camera.Reset();
         }
 
+        public void FullReset()
+        {
+            _camera.FullReset();
+        }
+
+        public void SetStartParameters(CameraStartParameters cameraStartParameters)
+        {
+            Position = cameraStartParameters.Position ?? Position;
+            Rotation = cameraStartParameters.Rotation ?? Rotation;
+            Zoom = cameraStartParameters.Zoom ?? Zoom;
+        }
+
         public override void Initialize()
         {
             using (var scope = Logger?.BeginScope($"{nameof(Camera2dController)} {System.Reflection.MethodBase.GetCurrentMethod().Name}"))
@@ -80,8 +102,6 @@ namespace Utilities.GameComponents
                 _camera = _cameraOptions is null ?
                     new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport) :
                     new Camera2d(_graphicsDeviceManager.GraphicsDevice.Viewport, _cameraOptions);
-                RotationEnabled = false;
-                ResetEnabled = false;
 
                 Logger?.LogTrace(scope, "{83579F22-0071-4A58-B544-5C7AF36E61F1}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
 
@@ -112,8 +132,8 @@ namespace Utilities.GameComponents
         {
             var speedDelta = ScaleRotationDeltaByRotationSpeed(_camera.RotationSpeed, delta);
             var constrainedDelta = ConstrainRotationDeltaToIntegralDegrees(speedDelta);
-            _input.OnHeld(() => _camera.Rotation += constrainedDelta, b => b.Buttons.X, Keys.D9);
-            _input.OnHeld(() => _camera.Rotation -= constrainedDelta, b => b.Buttons.Y, Keys.D0);
+            _input.OnHeld(() => Rotation += constrainedDelta, b => b.Buttons.X, Keys.D9);
+            _input.OnHeld(() => Rotation -= constrainedDelta, b => b.Buttons.Y, Keys.D0);
         }
 
         private void HandleZoom(float delta)
@@ -121,8 +141,8 @@ namespace Utilities.GameComponents
             var speedDelta = ScaleZoomDeltaByZoomSpeed(_camera.ZoomSpeed, delta);
             var zoomScaledDelta = ScaleZoomDeltaByZoomValue(_camera.Zoom, speedDelta);
             var constrainedDelta = ConstrainZoomDeltaToIntegralPercentage(_camera.ZoomSpeed, zoomScaledDelta);
-            _input.OnHeld(() => _camera.Zoom -= constrainedDelta, b => b.Buttons.LeftShoulder, Keys.OemComma);
-            _input.OnHeld(() => _camera.Zoom += constrainedDelta, b => b.Buttons.RightShoulder, Keys.OemPeriod);
+            _input.OnHeld(() => Zoom -= constrainedDelta, b => b.Buttons.LeftShoulder, Keys.OemComma);
+            _input.OnHeld(() => Zoom += constrainedDelta, b => b.Buttons.RightShoulder, Keys.OemPeriod);
             _input.OnScrollWheelChanged(diff => _camera.Zoom += constrainedDelta * diff);
         }
 
@@ -184,7 +204,11 @@ namespace Utilities.GameComponents
 
         protected override void OnEnabledChanged(object sender, EventArgs args)
         {
-            _camera?.Reset();
+            MoveEnabled = true;
+            RotationEnabled = true;
+            ZoomEnabled = true;
+            ResetEnabled = true;
+            _camera?.FullReset();
             base.OnEnabledChanged(sender, args);
         }
     }

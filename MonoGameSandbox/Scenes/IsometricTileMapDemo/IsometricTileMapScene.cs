@@ -18,7 +18,6 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
     {
         private readonly ICameraService _camera;
         private readonly IInputService _input;
-        private IsometricTileMap _isoTileMap;
 
         public IsometricTileMapScene(Game game, SpriteBatch spriteBatch)
             : base(game, spriteBatch)
@@ -28,8 +27,12 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
 
             _camera = Game.Services.GetService<ICameraService>();
             _input = Game.Services.GetService<IInputService>();
+
             Transformer = _camera;
 
+            _camera.Enabled = true;
+            _camera.RotationEnabled = false;
+            _camera.ResetEnabled = false;
             BackgroundColor = Microsoft.Xna.Framework.Color.CadetBlue;
 
             Logger?.LogTrace(scope, "{EE426881-0FEB-4BBC-83D3-1D70694AC7B0}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
@@ -57,9 +60,9 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
 
                 CreateIsometricTileMap();
 
-                _camera.Enabled = true;
-                _camera.Position = new Vector2(5310, 4475);
-                _camera.Zoom = 0.6666f;
+                _camera.ResetEnabled = false;
+                _camera.MaxZoom = 2.0f;
+                _camera.MinZoom = 0.5f;
 
                 p.Report((100, "Done!"));
             });
@@ -80,18 +83,12 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
             base.Update(gameTime);
         }
 
-        protected override void DrawMyContent(SpriteBatch spriteBatch)
-        {
-
-            base.DrawMyContent(spriteBatch);
-        }
-
         protected override void UnloadContent()
         {
             using var scope = Logger?.BeginScope($"{nameof(IsometricTileMapScene)} {System.Reflection.MethodBase.GetCurrentMethod().Name}");
             Logger?.LogTrace(scope, "{0046AF56-2079-4ED5-8A27-6F0F1B88A2FE}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
-            // unload stuff
+            _camera.Enabled = false;
 
             Logger?.LogTrace(scope, "{36722C17-0517-42BE-96B8-B57EB9980B58}", $"Finished Override [{Stopwatch.GetTimestamp()}]", null);
 
@@ -102,7 +99,7 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
 
         private void CreateIsometricTileMap()
         {
-            _isoTileMap = new IsometricTileMap(this,
+            var isoTileMap = new IsometricTileMap(this,
                                 "tileGuides/backCorner",
                                 "tileGuides/backLeftWedge",
                                 "tileGuides/backRightWedge",
@@ -121,6 +118,11 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
                 TileArrayWidth = 32,
                 TileArrayHeight = 32,
                 TileArrayLayers = 16,
+                CameraStartParameters = new CameraStartParameters
+                {
+                    Position = new Vector2(5310, 4475),
+                    Zoom = 0.5f
+                }
             };
 
             /*
@@ -128,17 +130,17 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
              */
 
             // ground level
-            for (var x = _isoTileMap.TileArrayWidth; x >= 0; x--)
+            for (var x = isoTileMap.TileArrayWidth; x >= 0; x--)
             {
-                for (var y = _isoTileMap.TileArrayHeight; y >= 0; y--)
+                for (var y = isoTileMap.TileArrayHeight; y >= 0; y--)
                 {
-                    _isoTileMap.MapTextures("tileGuides/box", new Vector3(x, y, 0));
+                    isoTileMap.MapTextures("tileGuides/box", new Vector3(x, y, 0));
                 }
             }
 
             // stuff above ground level...
 
-            _isoTileMap.MapTextures("tileGuides/box"
+            isoTileMap.MapTextures("tileGuides/box"
                 , new Vector3(15, 15, 1)
                 , new Vector3(16, 15, 1)
                 , new Vector3(17, 15, 1)
@@ -164,63 +166,63 @@ namespace MonoGameSandbox.Scenes.IsometricTileMapDemo
                 , new Vector3(17, 17, 3)
             );
 
-            _isoTileMap.MapTextures("tileGuides/leftWedge",
+            isoTileMap.MapTextures("tileGuides/leftWedge",
                 new Vector3(15, 18, 1)
             );
 
-            _isoTileMap.MapTextures("tileGuides/leftCorner",
+            isoTileMap.MapTextures("tileGuides/leftCorner",
                 new Vector3(14, 18, 1)
             );
 
-            _isoTileMap.MapTextures("tileGuides/leftBackWedge",
+            isoTileMap.MapTextures("tileGuides/leftBackWedge",
                 new Vector3(14, 17, 1)
             );
 
-            _isoTileMap.MapTextures("tileGuides/rightWedge",
+            isoTileMap.MapTextures("tileGuides/rightWedge",
                 new Vector3(18, 15, 1)
             );
 
-            _isoTileMap.MapTextures("tileGuides/rightCorner",
+            isoTileMap.MapTextures("tileGuides/rightCorner",
                 new Vector3(18, 14, 1)
             );
 
-            _isoTileMap.MapTextures("tileGuides/rightBackWedge",
+            isoTileMap.MapTextures("tileGuides/rightBackWedge",
                 new Vector3(17, 14, 1)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charFlat"
+            isoTileMap.MapTextures("tileGuides/charFlat"
                 , new Vector3(17, 17, 4)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charFlat"
+            isoTileMap.MapTextures("tileGuides/charFlat"
                 , new Vector3(16, 17, 3)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charFlat",
+            isoTileMap.MapTextures("tileGuides/charFlat",
                 new Vector3(16, 18, 1)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charIncline"
+            isoTileMap.MapTextures("tileGuides/charIncline"
                 , new Vector3(15, 18, 2)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charIncline",
+            isoTileMap.MapTextures("tileGuides/charIncline",
                 new Vector3(14, 18, 2)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charIncline",
+            isoTileMap.MapTextures("tileGuides/charIncline",
                 new Vector3(14, 17, 2)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charIncline",
+            isoTileMap.MapTextures("tileGuides/charIncline",
                 new Vector3(18, 15, 2)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charIncline",
+            isoTileMap.MapTextures("tileGuides/charIncline",
                 new Vector3(18, 14, 2)
             );
 
-            _isoTileMap.MapTextures("tileGuides/charIncline",
+            isoTileMap.MapTextures("tileGuides/charIncline",
                 new Vector3(17, 14, 2)
             );
         }

@@ -13,8 +13,12 @@ namespace Utilities.Abstractions
         bool RotationEnabled { get; set; }
         float Rotation { get; set; }
         bool ZoomEnabled { get; set; }
+        float MaxZoom { get; set; }
+        float MinZoom { get; set; }
         float Zoom { get; set; }
         bool ResetEnabled { get; set; }
         void Reset();
+        void FullReset();
+        void SetStartParameters(CameraStartParameters cameraStartParameters);
     }
 }

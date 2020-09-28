@@ -125,7 +125,7 @@ namespace MonoGameSandbox.Scenes.SimpleSaveDemo
             base.Update(gameTime);
         }
 
-        protected override void DrawMyContent(SpriteBatch spriteBatch)
+        protected override void DrawMyContent(SpriteBatch spriteBatch, bool drawIndependently)
         {
             if (_savedSomething)
             {
@@ -137,7 +137,7 @@ namespace MonoGameSandbox.Scenes.SimpleSaveDemo
                 spriteBatch.DrawString(Game.Content.Load<SpriteFont>("LogFont"), $"The content loaded from the last file saved was: {_lastLoaded}", new Vector2(100, 200), Microsoft.Xna.Framework.Color.White);
             }
 
-            base.DrawMyContent(spriteBatch);
+            base.DrawMyContent(spriteBatch, drawIndependently);
         }
 
         protected override void UnloadContent()

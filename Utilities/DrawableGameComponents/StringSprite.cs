@@ -30,8 +30,9 @@ namespace Utilities.DrawableGameComponents
         /// <param name="parent"></param>
         public StringSprite(ISprite parent) : base(parent) { }
 
-        protected override void DrawMyContent(SpriteBatch spriteBatch)
+        protected override void DrawMyContent(SpriteBatch spriteBatch, bool drawIndependently)
         {
+            if (drawIndependently) return;
             if (SpriteFont is null) return;
 
             DecomposeTransform(Transform, out var position, out var rotation, out var scale);

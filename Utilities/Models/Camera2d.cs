@@ -17,15 +17,17 @@ namespace Utilities.Models
         public float RotationSpeed { get; } = 0.001f;
 
         private float _zoom = 1.0f;
-        private readonly float _maxZoom = 100.0f;
-        private readonly float _minZoom = 0.01f;
+        private const float defaultMaxZoom = 100.0f;
+        public float MaxZoom { get; set; } = defaultMaxZoom;
+        private const float defaultMinZoom = 0.01f;
+        public float MinZoom { get; set; } = defaultMinZoom;
         public float Zoom
         {
             get => _zoom;
             set
             {
                 var zoom = ReverseZoom ? value * -1 : value;
-                _zoom = zoom < _minZoom ? _minZoom : zoom > _maxZoom ? _maxZoom : zoom;
+                _zoom = zoom < MinZoom ? MinZoom : zoom > MaxZoom ? MaxZoom : zoom;
             }
         }
         private float _rotation;
@@ -78,8 +80,8 @@ namespace Utilities.Models
             _maxY = options.MaxY;
             _y = options.DefaultY;
             MovementSpeed = options.MovementSpeed;
-            _minZoom = options.MinZoom;
-            _maxZoom = options.MaxZoom;
+            MinZoom = options.MinZoom;
+            MaxZoom = options.MaxZoom;
             _zoom = options.DefaultZoom;
             ZoomSpeed = options.ZoomSpeed;
             _minRotation = options.MinRotation;
@@ -104,6 +106,13 @@ namespace Utilities.Models
             CenterCamera();
             Rotation = 0.0f;
             Zoom = 1;
+        }
+
+        public void FullReset()
+        {
+            Reset();
+            MaxZoom = defaultMaxZoom;
+            MinZoom = defaultMinZoom;
         }
 
         private void CenterCamera()

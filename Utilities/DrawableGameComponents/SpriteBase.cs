@@ -36,6 +36,7 @@ namespace Utilities.DrawableGameComponents
         public SpriteEffects Effects { get; set; }
         public Color? Color { get; set; }
         public bool IsInitialized { get; protected set; }
+        public bool DrawDisabled { get; set; }
         /// <summary>
         /// An object that can apply an additional transfor matrix at render time
         /// </summary>
@@ -43,7 +44,7 @@ namespace Utilities.DrawableGameComponents
         protected LoggerService Logger { get; }
         public int LoadContentProgressPercent { get; protected set; } = -1;
         public string LoadContentProgressMessage { get; protected set; } = "Loading...";
-        public bool LoadContentCompleted { get; protected set; } = true;
+        public bool LoadContentCompleted { get; private set; } = true;
 
         /// <summary>
         /// Root node constructor
@@ -164,9 +165,11 @@ namespace Utilities.DrawableGameComponents
         /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
+            if (DrawDisabled) return;
+
             if (!LoadContentCompleted)
             {
-                DrawMyContent(SpriteBatch);
+                DrawMyContent(SpriteBatch, true);
                 return;
             }
 
@@ -182,7 +185,7 @@ namespace Utilities.DrawableGameComponents
                     Transformer?.Transform ?? Matrix.Identity);
             }
 
-            DrawMyContent(SpriteBatch);
+            DrawMyContent(SpriteBatch, false);
 
             foreach (var child in Children) child.Draw(gameTime);
 
@@ -198,7 +201,13 @@ namespace Utilities.DrawableGameComponents
         /// Override this method with the code for rendering the sprite implementation
         /// </summary>
         /// <param name="spriteBatch"></param>
-        protected virtual void DrawMyContent(SpriteBatch spriteBatch)
+        /// <param name="drawIndependently">
+        /// Set to true if this implementation will need to call spriteBatch.Begin()
+        /// and spriteBatch.End() itself.
+        /// 
+        /// Set to false if Begin() has already been called on spriteBatch.
+        /// </param>
+        protected virtual void DrawMyContent(SpriteBatch spriteBatch, bool drawIndependently)
         {
             // here this is a no nop
             // but any child class that renders its own content
@@ -288,25 +297,20 @@ namespace Utilities.DrawableGameComponents
         }
 
         protected bool isUnloading = false;
+        private bool _isUnloadingBase = false;
         protected override void UnloadContent()
         {
             // this mechanism will prevent follow-up
             // events such as that fired by the GameComponentsCollection
             // from trying to Unload the content more than once
-            if (isUnloading) return;
-            isUnloading = true;
+            if (_isUnloadingBase) return;
+            _isUnloadingBase = true;
 
             // remove this from its parent
             Parent?.Children.Remove(this);
 
             // unload and remove all of its children
-            var sweep = new ISprite[Children.Count];
-            Children.CopyTo(sweep);
-            foreach (var child in sweep)
-            {
-                Children.ElementAt(Children.IndexOf(child)).ForceUnloadContent();
-                Children.Remove(child);
-            }
+            UnloadChildren();
 
             // perform base unload duties
             base.UnloadContent();
@@ -315,6 +319,17 @@ namespace Utilities.DrawableGameComponents
             // memory as there are many ways in which references
             // to it and its children might potentially linger otherwise
             Dispose();
+        }
+
+        protected void UnloadChildren()
+        {
+            var sweep = new ISprite[Children.Count];
+            Children.CopyTo(sweep);
+            foreach (var child in sweep)
+            {
+                Children.ElementAt(Children.IndexOf(child)).ForceUnloadContent();
+                Children.Remove(child);
+            }
         }
 
         /// <summary>

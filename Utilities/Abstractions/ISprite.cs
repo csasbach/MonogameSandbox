@@ -38,7 +38,18 @@ namespace Utilities.DrawableGameComponents
         /// (empty if this sprite is a leaf node)
         /// </summary>
         List<ISprite> Children { get; }
+        /// <summary>
+        /// Can be checked to determine if this sprite has been initialized yet
+        /// </summary>
         bool IsInitialized { get; }
+        /// <summary>
+        /// Can be checked to determine if this sprite's content has finished loading
+        /// </summary>
+        bool LoadContentCompleted { get; }
+        /// <summary>
+        /// Can be set to disable draw calls for this sprite
+        /// </summary>
+        bool DrawDisabled { get; set; }
 
         /// <summary>
         /// The standard GameComponent override
