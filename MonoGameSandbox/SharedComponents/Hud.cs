@@ -11,6 +11,7 @@ namespace MonoGameSandbox.SharedComponents
     public sealed class Hud : Canvas2d
     {
         private readonly IPauseService _pause;
+        private readonly IFrameMetricsService _fpsService;
 
         public Hud(Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
@@ -18,6 +19,7 @@ namespace MonoGameSandbox.SharedComponents
             Logger?.LogTrace(scope, "{9ED1A643-52EB-428B-A74F-A7DDA019B26F}", $"Started [{Stopwatch.GetTimestamp()}]", null);
 
             _pause = Game.Services.GetService<IPauseService>();
+            _fpsService = new FrameMetricsService(Game);
 
             Logger?.LogTrace(scope, "{90D04547-9299-4A06-A463-A0743B838A50}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
@@ -60,6 +62,16 @@ namespace MonoGameSandbox.SharedComponents
                 $"CamRotDeg:{MathHelper.ToDegrees(camera?.Rotation ?? 0).ToString(degreesFormat)}";
             };
             topBackground.AddStringSprite(new Vector2(10, 10), logFont, text);
+
+            string fpsText() => $"FPS: {_fpsService.CurrentFps:000} " +
+                $"AVG: {_fpsService.MeanFps:000} " +
+                $"MAX: {_fpsService.MaxFps:000} " +
+                $"MIN: {_fpsService.MinFps:000} " +
+                $"AVG^: {_fpsService.MeanFpsDelta:+000;-000;+000} " +
+                $"MAX^: {_fpsService.MaxFpsDelta:+000;-000;+000} " +
+                $"MIN^: {_fpsService.MinFpsDelta:+000;-000;+000} ";
+            var position = new Vector2(Game.GraphicsDevice.Viewport.Width - (logFont.MeasureString(fpsText()).X + 10), 10);
+            topBackground.AddStringSprite(position, logFont, fpsText);
 
             Logger?.LogTrace(scope, "{CF52AEF1-BFCC-442B-B509-F9023F1111F4}", $"Finished [{Stopwatch.GetTimestamp()}]", null);
         }
