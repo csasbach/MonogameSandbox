@@ -64,9 +64,21 @@ namespace Utilities.Services
             MeanFps = Batches.SelectMany(b => b.Value.Samples).Average();
             MaxFps = Batches.SelectMany(b => b.Value.Samples).Max();
             MinFps = Batches.SelectMany(b => b.Value.Samples).Min();
-            MeanFpsDelta = Batches.Last().Value.MeanFps - Batches.First().Value.MeanFps;
-            MaxFpsDelta = Batches.Last().Value.MaxFps - Batches.First().Value.MaxFps;
-            MinFpsDelta = Batches.Last().Value.MinFps - Batches.First().Value.MinFps;
+            MeanFpsDelta = Batches.Select(b => {
+                if (b.Key == Batches.Last().Key) return 0;
+                var next = Batches.Values.ElementAt(Batches.IndexOfKey(b.Key) + 1);
+                return next.MeanFps - b.Value.MeanFps;
+            }).Average();
+            MaxFpsDelta = Batches.Select(b => {
+                if (b.Key == Batches.Last().Key) return 0;
+                var next = Batches.Values.ElementAt(Batches.IndexOfKey(b.Key) + 1);
+                return next.MaxFps - b.Value.MaxFps;
+            }).Average();
+            MinFpsDelta = Batches.Select(b => {
+                if (b.Key == Batches.Last().Key) return 0;
+                var next = Batches.Values.ElementAt(Batches.IndexOfKey(b.Key) + 1);
+                return next.MinFps - b.Value.MinFps;
+            }).Average();
 
             base.Update(gameTime);
         }
